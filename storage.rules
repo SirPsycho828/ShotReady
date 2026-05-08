@@ -1,0 +1,26 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Photographer uploads: only the authenticated photographer can write
+    match /uploads/{photographerId}/{bookingId}/{fileName} {
+      allow read: if request.auth != null && request.auth.uid == photographerId;
+      allow write: if request.auth != null && request.auth.uid == photographerId
+        && request.resource.size < 30 * 1024 * 1024
+        && request.resource.contentType.matches('image/jpeg');
+    }
+
+    // Processed files: read by authenticated photographer, written by Cloud Functions only
+    match /processed/{bookingId}/{fileName} {
+      allow read: if request.auth != null;
+    }
+
+    // Branding assets
+    match /branding/{photographerId}/{fileName} {
+      allow read;
+      allow write: if request.auth != null && request.auth.uid == photographerId
+        && request.resource.size < 2 * 1024 * 1024;
+    }
+  }
+}

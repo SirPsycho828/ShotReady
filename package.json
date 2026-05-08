@@ -1,0 +1,15 @@
+{
+  "name": "shotready",
+  "private": true,
+  "scripts": {
+    "mobile": "pnpm --filter @shotready/mobile start",
+    "web": "pnpm --filter @shotready/web dev",
+    "functions:build": "pnpm --filter @shotready/functions build",
+    "shared:build": "pnpm --filter @shotready/shared build",
+    "typecheck": "pnpm -r run typecheck",
+    "clean": "pnpm -r run clean"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

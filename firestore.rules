@@ -1,0 +1,57 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Photographer profile: only the owner can read/write
+    match /photographers/{photographerId} {
+      allow read, write: if request.auth != null && request.auth.uid == photographerId;
+
+      // Notifications subcollection
+      match /notifications/{notificationId} {
+        allow read, write: if request.auth != null && request.auth.uid == photographerId;
+      }
+    }
+
+    // Packages: only the owning photographer
+    match /packages/{packageId} {
+      allow read: if request.auth != null
+        && request.auth.uid == resource.data.photographerId;
+      allow create: if request.auth != null
+        && request.auth.uid == request.resource.data.photographerId;
+      allow update, delete: if request.auth != null
+        && request.auth.uid == resource.data.photographerId;
+    }
+
+    // Bookings: only the owning photographer via client SDK.
+    // Agents access bookings through Cloud Functions (server-side token validation).
+    match /bookings/{bookingId} {
+      allow read, write: if request.auth != null
+        && request.auth.uid == resource.data.photographerId;
+      allow create: if request.auth != null
+        && request.auth.uid == request.resource.data.photographerId;
+
+      // Photos subcollection
+      match /photos/{photoId} {
+        allow read, write: if request.auth != null
+          && get(/databases/$(database)/documents/bookings/$(bookingId)).data.photographerId == request.auth.uid;
+      }
+    }
+
+    // Route plans: only the owning photographer
+    match /routePlans/{planId} {
+      allow read, write: if request.auth != null
+        && request.auth.uid == resource.data.photographerId;
+      allow create: if request.auth != null
+        && request.auth.uid == request.resource.data.photographerId;
+    }
+
+    // Invoices: only the owning photographer
+    match /invoices/{invoiceId} {
+      allow read, write: if request.auth != null
+        && request.auth.uid == resource.data.photographerId;
+      allow create: if request.auth != null
+        && request.auth.uid == request.resource.data.photographerId;
+    }
+  }
+}
