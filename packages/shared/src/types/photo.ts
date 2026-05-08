@@ -1,6 +1,7 @@
 import type { Timestamp } from "./common";
+import type { PROCESSING_STATUSES } from "../constants/booking-status";
 
-export type ProcessingStatus = "uploading" | "processing" | "ready" | "error";
+export type ProcessingStatus = (typeof PROCESSING_STATUSES)[number];
 
 export interface Photo {
   filename: string;

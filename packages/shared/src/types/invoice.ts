@@ -1,6 +1,7 @@
 import type { Timestamp } from "./common";
+import type { INVOICE_STATUSES } from "../constants/booking-status";
 
-export type InvoiceStatus = "draft" | "sent" | "paid" | "overdue" | "void";
+export type InvoiceStatus = (typeof INVOICE_STATUSES)[number];
 
 export interface InvoiceLineItem {
   description: string;

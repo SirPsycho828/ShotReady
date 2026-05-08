@@ -1,21 +1,22 @@
 import { Tabs } from "expo-router";
 import { Briefcase, Calendar, MapPin, Settings } from "lucide-react-native";
+import { darkColors } from "@/theme/colors";
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#2563EB",
-        tabBarInactiveTintColor: "#5E6687",
+        tabBarActiveTintColor: darkColors.accent,
+        tabBarInactiveTintColor: darkColors.textMuted,
         tabBarStyle: {
-          backgroundColor: "#0F1117",
-          borderTopColor: "#2E3347",
+          backgroundColor: darkColors.background,
+          borderTopColor: darkColors.border,
           height: 56,
         },
         headerStyle: {
-          backgroundColor: "#0F1117",
+          backgroundColor: darkColors.background,
         },
-        headerTintColor: "#F1F3F9",
+        headerTintColor: darkColors.textPrimary,
       }}
     >
       <Tabs.Screen
