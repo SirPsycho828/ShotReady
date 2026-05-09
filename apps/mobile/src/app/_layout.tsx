@@ -1,28 +1,35 @@
 import "../../global.css";
-import { Slot, useRouter, useSegments } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { View, ActivityIndicator } from "react-native";
 import { useEffect } from "react";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { usePhotographer } from "@/hooks/usePhotographer";
 import { OfflineBar } from "@/components/ui";
 import { darkColors } from "@/theme/colors";
 
 function AuthGate() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
+  const { photographer, isLoading: profileLoading } = usePhotographer();
   const segments = useSegments();
   const router = useRouter();
+
+  const isLoading = authLoading || (!!user && profileLoading);
 
   useEffect(() => {
     if (isLoading) return;
 
-    const inAuthGroup = segments[0] === "(auth)";
+    const inAuth = segments[0] === "(auth)";
+    const inOnboarding = segments[0] === "(onboarding)";
 
-    if (!user && !inAuthGroup) {
-      router.replace("/(auth)/login");
-    } else if (user && inAuthGroup) {
-      router.replace("/(tabs)");
+    if (!user) {
+      if (!inAuth) router.replace("/(auth)/login");
+    } else if (!photographer?.onboardingComplete) {
+      if (!inOnboarding) router.replace("/(onboarding)/step1-business");
+    } else {
+      if (inAuth || inOnboarding) router.replace("/(tabs)");
     }
-  }, [user, isLoading, segments, router]);
+  }, [user, isLoading, photographer?.onboardingComplete, segments, router]);
 
   if (isLoading) {
     return (
@@ -32,7 +39,14 @@ function AuthGate() {
     );
   }
 
-  return <Slot />;
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(auth)" />
+      <Stack.Screen name="(onboarding)" />
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="package-form" options={{ presentation: "modal" }} />
+    </Stack>
+  );
 }
 
 export default function RootLayout() {
