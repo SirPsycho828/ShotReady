@@ -10,7 +10,7 @@
  */
 
 // Function groups will be imported here as they are implemented:
-// export { bookingCreate, bookingUpdateStatus, bookingGetByToken } from "./booking";
+export { bookingGetByToken, bookingToggleSelection, bookingSubmitSelections } from "./booking";
 export { mediaOnUpload } from "./media";
 export { mediaOnPhotoDeleted, mediaRetentionCleanup } from "./media-cleanup";
 export { routingOptimize } from "./routing";
