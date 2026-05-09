@@ -23,6 +23,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Jobs",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => <Briefcase color={color} size={size} strokeWidth={1.75} />,
         }}
       />
@@ -30,6 +31,7 @@ export default function TabLayout() {
         name="calendar"
         options={{
           title: "Calendar",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => <Calendar color={color} size={size} strokeWidth={1.75} />,
         }}
       />
@@ -44,6 +46,7 @@ export default function TabLayout() {
         name="settings"
         options={{
           title: "Settings",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => <Settings color={color} size={size} strokeWidth={1.75} />,
         }}
       />
