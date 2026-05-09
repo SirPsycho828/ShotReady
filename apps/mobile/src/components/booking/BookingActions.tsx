@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { View, Text, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { Button } from "@/components/ui";
@@ -7,6 +8,7 @@ import type { BookingWithId } from "@/hooks/useBookings";
 import { CloudOff } from "lucide-react-native";
 import { darkColors } from "@/theme/colors";
 import firestore from "@react-native-firebase/firestore";
+import functions from "@react-native-firebase/functions";
 
 interface BookingActionsProps {
   booking: BookingWithId;
@@ -16,6 +18,7 @@ export function BookingActions({ booking }: BookingActionsProps) {
   const { transitioning, error, transition, clearError } = useBookingTransition();
   const { isOnline } = useConnectivity();
   const router = useRouter();
+  const [delivering, setDelivering] = useState(false);
   const isDisabled = !isOnline || transitioning;
 
   async function handleApprove() {
@@ -69,10 +72,37 @@ export function BookingActions({ booking }: BookingActionsProps) {
     if (success) router.back();
   }
 
+  function handleDeliver() {
+    Alert.alert(
+      "Deliver Finals",
+      `Deliver ${booking.proofing?.selectedCount ?? ""} photos to ${booking.agent.name}?`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Deliver",
+          onPress: async () => {
+            setDelivering(true);
+            try {
+              await functions().httpsCallable("deliverPhotos")({
+                bookingId: booking.id,
+              });
+              router.back();
+            } catch {
+              Alert.alert("Error", "Failed to deliver photos. Please try again.");
+            } finally {
+              setDelivering(false);
+            }
+          },
+        },
+      ],
+    );
+  }
+
   const hasActionButton =
     booking.status === "pending" ||
     booking.status === "confirmed" ||
     booking.status === "shooting" ||
+    (booking.status === "proofing" && !!booking.proofing?.completedAt) ||
     booking.status === "paid";
 
   return (
@@ -112,10 +142,26 @@ export function BookingActions({ booking }: BookingActionsProps) {
       )}
 
       {booking.status === "proofing" && (
-        <View className="py-md items-center">
-          <Text className="text-body text-text-secondary text-center">
-            Waiting for agent to review and select photos.
-          </Text>
+        <View>
+          {booking.proofing?.completedAt ? (
+            <View>
+              <Text className="text-body text-text-secondary text-center mb-md">
+                Agent selected {booking.proofing.selectedCount} photos
+              </Text>
+              <Button
+                title="Deliver Finals"
+                onPress={handleDeliver}
+                disabled={isDisabled || delivering}
+                loading={delivering}
+              />
+            </View>
+          ) : (
+            <View className="py-md items-center">
+              <Text className="text-body text-text-secondary text-center">
+                Waiting for agent to review and select photos.
+              </Text>
+            </View>
+          )}
         </View>
       )}
 

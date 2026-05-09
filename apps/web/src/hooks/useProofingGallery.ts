@@ -27,6 +27,12 @@ export interface ProofingData {
     isSubmitted: boolean;
     selectedCount: number | null;
   };
+  delivery?: {
+    downloadUrl: string | null;
+    zipSize: number;
+    photoCount: number;
+    retentionExpires: string | null;
+  };
 }
 
 const DEBOUNCE_MS = 500;

@@ -35,7 +35,8 @@ export const bookingGetByToken = onCall(
     const booking = bookingDoc.data();
     const bookingId = bookingDoc.id;
 
-    if (booking.status !== "proofing") {
+    // Only proofing and delivered statuses get full data
+    if (booking.status !== "proofing" && booking.status !== "delivered") {
       return {
         booking: {
           id: bookingId,
@@ -54,21 +55,88 @@ export const bookingGetByToken = onCall(
       };
     }
 
+    // Get photographer branding (for both proofing and delivered)
     const photographerSnap = await db
       .collection("photographers")
       .doc(booking.photographerId)
       .get();
     const photographer = photographerSnap.data();
 
+    const bucket = getStorage().bucket();
+
+    // Build booking info (shared between proofing and delivered)
+    const bookingInfo = {
+      id: bookingId,
+      status: booking.status,
+      address: booking.property.address,
+      photographerName: photographer?.businessName ?? "Photographer",
+      photographerLogo: photographer?.branding?.logoUrl ?? null,
+      accentColor: photographer?.branding?.accentColor ?? "#2563EB",
+      agentEmail: booking.agent.email,
+    };
+
+    // --- PROOFING: return all photos for selection ---
+    if (booking.status === "proofing") {
+      const photosSnap = await db
+        .collection("bookings")
+        .doc(bookingId)
+        .collection("photos")
+        .where("processingStatus", "==", "ready")
+        .orderBy("sortOrder", "asc")
+        .get();
+
+      const photos = await Promise.all(
+        photosSnap.docs.map(async (doc) => {
+          const data = doc.data();
+          const [thumbnailUrl] = await bucket
+            .file(data.thumbnailPath)
+            .getSignedUrl({
+              action: "read" as const,
+              expires: Date.now() + 24 * 60 * 60 * 1000,
+            });
+          const [watermarkedUrl] = await bucket
+            .file(data.watermarkedPath)
+            .getSignedUrl({
+              action: "read" as const,
+              expires: Date.now() + 24 * 60 * 60 * 1000,
+            });
+          return {
+            id: doc.id,
+            thumbnailUrl,
+            watermarkedUrl,
+            isSelected: data.isSelected as boolean,
+            sortOrder: data.sortOrder as number,
+          };
+        }),
+      );
+
+      if (!booking.proofing?.viewedAt) {
+        await bookingDoc.ref.update({
+          "proofing.viewedAt": FieldValue.serverTimestamp(),
+          updatedAt: FieldValue.serverTimestamp(),
+        });
+      }
+
+      return {
+        booking: bookingInfo,
+        photos,
+        proofing: {
+          isSubmitted: !!booking.proofing?.completedAt,
+          selectedCount: booking.proofing?.selectedCount ?? null,
+        },
+      };
+    }
+
+    // --- DELIVERED: return selected photos + download URL ---
     const photosSnap = await db
       .collection("bookings")
       .doc(bookingId)
       .collection("photos")
+      .where("isSelected", "==", true)
       .where("processingStatus", "==", "ready")
       .orderBy("sortOrder", "asc")
       .get();
 
-    const bucket = getStorage().bucket();
     const photos = await Promise.all(
       photosSnap.docs.map(async (doc) => {
         const data = doc.data();
@@ -78,43 +146,53 @@ export const bookingGetByToken = onCall(
             action: "read" as const,
             expires: Date.now() + 24 * 60 * 60 * 1000,
           });
-        const [watermarkedUrl] = await bucket
-          .file(data.watermarkedPath)
-          .getSignedUrl({
-            action: "read" as const,
-            expires: Date.now() + 24 * 60 * 60 * 1000,
-          });
         return {
           id: doc.id,
           thumbnailUrl,
-          watermarkedUrl,
-          isSelected: data.isSelected as boolean,
+          watermarkedUrl: "",
+          isSelected: true,
           sortOrder: data.sortOrder as number,
         };
       }),
     );
 
-    if (!booking.proofing?.viewedAt) {
-      await bookingDoc.ref.update({
-        "proofing.viewedAt": FieldValue.serverTimestamp(),
-        updatedAt: FieldValue.serverTimestamp(),
-      });
+    // Generate signed download URL for the ZIP
+    let downloadUrl: string | null = null;
+    let zipSize = 0;
+    const zipPath = booking.delivery?.downloadToken;
+    if (typeof zipPath === "string" && zipPath) {
+      try {
+        const [url] = await bucket.file(zipPath).getSignedUrl({
+          action: "read" as const,
+          expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
+        });
+        downloadUrl = url;
+        const [metadata] = await bucket.file(zipPath).getMetadata();
+        zipSize = parseInt(String(metadata.size ?? "0"), 10);
+      } catch {
+        console.error("Failed to generate download URL for", zipPath);
+      }
     }
 
+    const deliveredAt = booking.delivery?.deliveredAt?.toDate?.();
+    const retentionExpires = deliveredAt
+      ? new Date(
+          deliveredAt.getTime() + 90 * 24 * 60 * 60 * 1000,
+        ).toISOString()
+      : null;
+
     return {
-      booking: {
-        id: bookingId,
-        status: booking.status,
-        address: booking.property.address,
-        photographerName: photographer?.businessName ?? "Photographer",
-        photographerLogo: photographer?.branding?.logoUrl ?? null,
-        accentColor: photographer?.branding?.accentColor ?? "#2563EB",
-        agentEmail: booking.agent.email,
-      },
+      booking: bookingInfo,
       photos,
       proofing: {
-        isSubmitted: !!booking.proofing?.completedAt,
+        isSubmitted: true,
         selectedCount: booking.proofing?.selectedCount ?? null,
+      },
+      delivery: {
+        downloadUrl,
+        zipSize,
+        photoCount: photosSnap.size,
+        retentionExpires,
       },
     };
   },

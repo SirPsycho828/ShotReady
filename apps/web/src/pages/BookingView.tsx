@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useProofingGallery } from "../hooks/useProofingGallery";
 import { ProofingGallery } from "../components/proofing/ProofingGallery";
+import { DownloadPage } from "../components/delivery/DownloadPage";
 
 export default function BookingView() {
   const { token } = useParams<{ token: string }>();
@@ -46,7 +47,10 @@ export default function BookingView() {
     );
   }
 
-  // Other statuses — placeholder for future specs (delivery, closed, etc.)
+  if (gallery.data.booking.status === "delivered") {
+    return <DownloadPage data={gallery.data} />;
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="text-center">

@@ -13,6 +13,7 @@
 export { bookingGetByToken, bookingToggleSelection, bookingSubmitSelections } from "./booking";
 export { mediaOnUpload } from "./media";
 export { mediaOnPhotoDeleted, mediaRetentionCleanup } from "./media-cleanup";
+export { deliverPhotos } from "./delivery";
 export { routingOptimize } from "./routing";
 // export { paymentsCreateInvoice, paymentsStripeWebhook, paymentsOverdueCheck } from "./payments";
 // export { notificationsOnBookingChange } from "./notifications";
