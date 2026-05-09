@@ -161,14 +161,6 @@ async function callDirectionsApi(
     .map((w) => `${w.lat},${w.lng}`)
     .join("|");
 
-  const params = new URLSearchParams({
-    origin,
-    destination,
-    key: googleMapsApiKey.value(),
-    optimize_waypoints: "true", // deprecated param name kept for compat; will use optimizeWaypoints below
-  });
-
-  // Build the URL manually to use the correct param name
   const baseUrl = "https://maps.googleapis.com/maps/api/directions/json";
   const url =
     `${baseUrl}?origin=${encodeURIComponent(origin)}` +
@@ -209,7 +201,7 @@ function computeOrderScore(
 ): number {
   let score = 0;
   let cursor = startMinutes;
-  stops.forEach((stop, i) => {
+  stops.forEach((stop) => {
     const period = getLightingPeriod(stop.orientation);
     if (period === "morning") {
       // Penalise afternoon arrivals for morning-preferred stops
