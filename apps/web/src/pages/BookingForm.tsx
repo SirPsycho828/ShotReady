@@ -6,6 +6,8 @@ import { usePhotographerBySlug } from "../hooks/usePhotographerBySlug";
 import { PackageCard } from "../components/PackageCard";
 import { BookingDatePicker } from "../components/BookingDatePicker";
 import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { ShellLayout } from "../components/shell/ShellLayout";
+import { StatusMessageCard } from "../components/shell/StatusMessageCard";
 
 function FormField({
   label,
@@ -157,61 +159,59 @@ export default function BookingForm() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 size={32} className="animate-spin text-accent" />
-      </div>
+      <ShellLayout branding={null}>
+        <div className="flex items-center justify-center py-20">
+          <Loader2 size={32} className="animate-spin text-gray-400" />
+        </div>
+      </ShellLayout>
     );
   }
 
   if (loadError || !data) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="text-center">
-          <AlertCircle size={48} className="text-error mx-auto mb-4" />
-          <h1 className="text-xl font-semibold text-text-primary">
-            {loadError ?? "Something went wrong"}
-          </h1>
-        </div>
-      </div>
+      <ShellLayout branding={null}>
+        <StatusMessageCard
+          icon={AlertCircle}
+          iconColor="#EF4444"
+          heading={loadError ?? "Something went wrong"}
+          body="Please check the link from your photographer."
+        />
+      </ShellLayout>
     );
   }
 
   if (submitted) {
+    const branding = {
+      businessName: data.photographer.businessName,
+      logoUrl: data.photographer.branding.logoUrl,
+      accentColor: data.photographer.branding.accentColor,
+    };
     return (
-      <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="text-center max-w-md">
-          <CheckCircle2 size={56} className="text-success mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-text-primary">
-            Your booking request has been submitted!
-          </h1>
-          <p className="text-text-secondary mt-3">
-            You'll receive an email at <strong>{form.email}</strong> when{" "}
-            {data.photographer.businessName} responds.
-          </p>
-          <p className="text-sm text-text-muted mt-2">
-            {data.photographer.businessName} typically responds within a few hours.
-          </p>
-        </div>
-      </div>
+      <ShellLayout branding={branding}>
+        <StatusMessageCard
+          icon={CheckCircle2}
+          iconColor="#22C55E"
+          heading="Your booking request has been submitted!"
+          body={`You'll receive an email at ${form.email} when ${data.photographer.businessName} responds.`}
+        />
+      </ShellLayout>
     );
   }
 
   const { photographer, packages } = data;
+  const branding = {
+    businessName: photographer.businessName,
+    logoUrl: photographer.branding.logoUrl,
+    accentColor: photographer.branding.accentColor,
+  };
 
   return (
-    <div className="min-h-screen bg-background py-8 px-4">
+    <ShellLayout branding={branding}>
       <form
         onSubmit={handleSubmit}
-        className="mx-auto max-w-[600px] space-y-8"
+        className="space-y-8"
         noValidate
       >
-        {/* Header */}
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-text-primary">
-            Book a Shoot with {photographer.businessName}
-          </h1>
-        </div>
-
         {/* Section 1: Your Information */}
         <section className="space-y-4">
           <h2 className="text-xs font-semibold text-text-muted uppercase tracking-wider">
@@ -405,6 +405,6 @@ export default function BookingForm() {
           )}
         </button>
       </form>
-    </div>
+    </ShellLayout>
   );
 }
