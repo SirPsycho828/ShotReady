@@ -1,7 +1,8 @@
 import { View, Text, ScrollView, Pressable, TextInput } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useBookings } from "@/hooks/useBookings";
+import { useConnectivity } from "@/hooks/useConnectivity";
 import { StatusPill } from "@/components/ui";
 import { PropertyInfo } from "@/components/booking/PropertyInfo";
 import { AgentInfo } from "@/components/booking/AgentInfo";
@@ -19,10 +20,16 @@ export default function BookingDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { bookings, isLoading } = useBookings();
+  const { isOnline } = useConnectivity();
   const booking = bookings.find((b) => b.id === id);
 
   const [notes, setNotes] = useState(booking?.photographerNotes ?? "");
   const [notesSaved, setNotesSaved] = useState(true);
+  const [savedWhileOffline, setSavedWhileOffline] = useState(false);
+
+  useEffect(() => {
+    if (isOnline) setSavedWhileOffline(false);
+  }, [isOnline]);
 
   async function saveNotes() {
     if (!id || notesSaved) return;
@@ -31,6 +38,7 @@ export default function BookingDetailScreen() {
       updatedAt: firestore.FieldValue.serverTimestamp(),
     });
     setNotesSaved(true);
+    setSavedWhileOffline(!isOnline);
   }
 
   if (isLoading) {
@@ -129,7 +137,7 @@ export default function BookingDetailScreen() {
             <TextInput
               className="text-body text-text-primary min-h-[60px]"
               value={notes}
-              onChangeText={(t) => { setNotes(t); setNotesSaved(false); }}
+              onChangeText={(t) => { setNotes(t); setNotesSaved(false); setSavedWhileOffline(false); }}
               onBlur={saveNotes}
               placeholder="Add private notes about this booking..."
               placeholderTextColor={darkColors.textMuted}
@@ -138,6 +146,9 @@ export default function BookingDetailScreen() {
             />
             {!notesSaved && (
               <Text className="text-small text-text-muted mt-xs">Unsaved changes</Text>
+            )}
+            {notesSaved && savedWhileOffline && (
+              <Text className="text-small text-warning mt-xs">Saved offline — will sync when connected</Text>
             )}
           </View>
 

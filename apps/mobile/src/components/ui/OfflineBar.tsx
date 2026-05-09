@@ -5,30 +5,55 @@ import Animated, {
   withTiming,
   Easing,
 } from "react-native-reanimated";
-import { useNetInfo } from "@react-native-community/netinfo";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useConnectivity } from "@/hooks/useConnectivity";
+import firestore from "@react-native-firebase/firestore";
 
 export function OfflineBar() {
-  const netInfo = useNetInfo();
+  const { isOnline } = useConnectivity();
+  const [isSyncing, setIsSyncing] = useState(false);
+  const wasOffline = useRef(false);
   const opacity = useSharedValue(1);
 
   useEffect(() => {
-    if (netInfo.isConnected === false) {
+    if (!isOnline) {
+      wasOffline.current = true;
       opacity.value = withRepeat(
         withTiming(0.5, { duration: 2000, easing: Easing.inOut(Easing.ease) }),
         -1,
         true,
       );
+    } else if (wasOffline.current) {
+      wasOffline.current = false;
+      setIsSyncing(true);
+      opacity.value = 1;
+
+      const timeout = setTimeout(() => setIsSyncing(false), 5000);
+      firestore()
+        .waitForPendingWrites()
+        .then(() => {
+          clearTimeout(timeout);
+          setIsSyncing(false);
+        })
+        .catch(() => {
+          clearTimeout(timeout);
+          setIsSyncing(false);
+        });
     } else {
       opacity.value = 1;
     }
-  }, [netInfo.isConnected, opacity]);
+  }, [isOnline, opacity]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
   }));
 
-  if (netInfo.isConnected !== false) return null;
+  if (isOnline && !isSyncing) return null;
 
-  return <Animated.View className="h-[3px] bg-warning w-full" style={animatedStyle} />;
+  return (
+    <Animated.View
+      className={`h-[3px] w-full ${isSyncing ? "bg-accent" : "bg-warning"}`}
+      style={animatedStyle}
+    />
+  );
 }

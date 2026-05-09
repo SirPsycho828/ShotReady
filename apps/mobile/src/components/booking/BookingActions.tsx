@@ -2,7 +2,10 @@ import { View, Text, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { Button } from "@/components/ui";
 import { useBookingTransition } from "@/hooks/useBookingTransition";
+import { useConnectivity } from "@/hooks/useConnectivity";
 import type { BookingWithId } from "@/hooks/useBookings";
+import { CloudOff } from "lucide-react-native";
+import { darkColors } from "@/theme/colors";
 import firestore from "@react-native-firebase/firestore";
 
 interface BookingActionsProps {
@@ -11,7 +14,9 @@ interface BookingActionsProps {
 
 export function BookingActions({ booking }: BookingActionsProps) {
   const { transitioning, error, transition, clearError } = useBookingTransition();
+  const { isOnline } = useConnectivity();
   const router = useRouter();
+  const isDisabled = !isOnline || transitioning;
 
   async function handleApprove() {
     const success = await transition(booking.id, booking.status, "confirmed", {
@@ -65,6 +70,12 @@ export function BookingActions({ booking }: BookingActionsProps) {
     if (success) router.back();
   }
 
+  const hasActionButton =
+    booking.status === "pending" ||
+    booking.status === "confirmed" ||
+    booking.status === "shooting" ||
+    booking.status === "paid";
+
   return (
     <View>
       {error && (
@@ -73,24 +84,24 @@ export function BookingActions({ booking }: BookingActionsProps) {
 
       {booking.status === "pending" && (
         <View>
-          <Button title="Approve Booking" onPress={handleApprove} loading={transitioning} />
+          <Button title="Approve Booking" onPress={handleApprove} disabled={isDisabled} loading={transitioning} />
           <View className="mt-sm">
-            <Button title="Decline" variant="destructive" onPress={handleDecline} loading={transitioning} />
+            <Button title="Decline" variant="destructive" onPress={handleDecline} disabled={isDisabled} loading={transitioning} />
           </View>
         </View>
       )}
 
       {booking.status === "confirmed" && (
         <View>
-          <Button title="Start Shoot" onPress={handleStartShoot} loading={transitioning} />
+          <Button title="Start Shoot" onPress={handleStartShoot} disabled={isDisabled} loading={transitioning} />
           <View className="mt-sm">
-            <Button title="Cancel Booking" variant="ghost" onPress={handleCancel} loading={transitioning} />
+            <Button title="Cancel Booking" variant="ghost" onPress={handleCancel} disabled={isDisabled} loading={transitioning} />
           </View>
         </View>
       )}
 
       {booking.status === "shooting" && (
-        <Button title="Complete Shoot" onPress={handleCompleteShoot} loading={transitioning} />
+        <Button title="Complete Shoot" onPress={handleCompleteShoot} disabled={isDisabled} loading={transitioning} />
       )}
 
       {booking.status === "editing" && (
@@ -126,7 +137,16 @@ export function BookingActions({ booking }: BookingActionsProps) {
       )}
 
       {booking.status === "paid" && (
-        <Button title="Close Job" variant="secondary" onPress={handleCloseJob} loading={transitioning} />
+        <Button title="Close Job" variant="secondary" onPress={handleCloseJob} disabled={isDisabled} loading={transitioning} />
+      )}
+
+      {!isOnline && hasActionButton && (
+        <View className="flex-row items-center justify-center mt-sm">
+          <CloudOff size={14} color={darkColors.textMuted} />
+          <Text className="text-small text-text-muted ml-xs">
+            Actions unavailable offline
+          </Text>
+        </View>
       )}
     </View>
   );
