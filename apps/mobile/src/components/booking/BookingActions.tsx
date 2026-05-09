@@ -6,6 +6,7 @@ import { useBookingTransition } from "@/hooks/useBookingTransition";
 import { useConnectivity } from "@/hooks/useConnectivity";
 import type { BookingWithId } from "@/hooks/useBookings";
 import { CloudOff } from "lucide-react-native";
+import { InvoiceEditor } from "@/components/booking/InvoiceEditor";
 import { darkColors } from "@/theme/colors";
 import firestore from "@react-native-firebase/firestore";
 import functions from "@react-native-firebase/functions";
@@ -103,6 +104,7 @@ export function BookingActions({ booking }: BookingActionsProps) {
     booking.status === "confirmed" ||
     booking.status === "shooting" ||
     (booking.status === "proofing" && !!booking.proofing?.completedAt) ||
+    booking.status === "delivered" ||
     booking.status === "paid";
 
   return (
@@ -166,15 +168,22 @@ export function BookingActions({ booking }: BookingActionsProps) {
       )}
 
       {booking.status === "delivered" && (
-        <View className="py-md items-center">
-          <Text className="text-body text-text-secondary text-center">
-            Photos delivered. Invoice management coming soon.
-          </Text>
-        </View>
+        booking.invoiceId ? (
+          <InvoiceEditor invoiceId={booking.invoiceId} isOnline={isOnline} />
+        ) : (
+          <View className="py-md items-center">
+            <Text className="text-body text-text-secondary text-center">
+              Creating invoice...
+            </Text>
+          </View>
+        )
       )}
 
       {(booking.status === "invoiced" || booking.status === "overdue") && (
-        <View className="py-md items-center">
+        <View className="bg-surface border border-border rounded-card p-md">
+          <Text className="text-caption text-text-muted mb-xs">
+            Invoice {booking.status === "overdue" ? "(Overdue)" : "(Sent)"}
+          </Text>
           <Text className="text-body text-text-secondary text-center">
             Awaiting payment from agent.
           </Text>

@@ -33,6 +33,15 @@ export interface ProofingData {
     photoCount: number;
     retentionExpires: string | null;
   };
+  invoice?: {
+    lineItems: { description: string; amount: number }[];
+    total: number;
+    status: string;
+    dueDate: string | null;
+    sentAt: string | null;
+    paidAt: string | null;
+    paymentUrl: string | null;
+  };
 }
 
 const DEBOUNCE_MS = 500;

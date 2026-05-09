@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useProofingGallery } from "../hooks/useProofingGallery";
 import { ProofingGallery } from "../components/proofing/ProofingGallery";
 import { DownloadPage } from "../components/delivery/DownloadPage";
+import { InvoiceSection } from "../components/delivery/InvoiceSection";
 
 export default function BookingView() {
   const { token } = useParams<{ token: string }>();
@@ -48,7 +49,20 @@ export default function BookingView() {
   }
 
   if (gallery.data.booking.status === "delivered") {
-    return <DownloadPage data={gallery.data} />;
+    return (
+      <div className="min-h-screen bg-white">
+        <DownloadPage data={gallery.data} />
+      </div>
+    );
+  }
+
+  if (["invoiced", "overdue", "paid"].includes(gallery.data.booking.status)) {
+    return (
+      <div className="min-h-screen bg-white">
+        <DownloadPage data={gallery.data} />
+        <InvoiceSection data={gallery.data} />
+      </div>
+    );
   }
 
   return (

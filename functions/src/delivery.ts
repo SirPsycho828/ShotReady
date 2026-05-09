@@ -4,6 +4,7 @@ import { getStorage } from "firebase-admin/storage";
 import sharp from "sharp";
 import JSZip from "jszip";
 import { REGION, FUNCTIONS_CONFIG } from "./config";
+import { createInvoiceDraft } from "./payments";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -182,6 +183,20 @@ export const deliverPhotos = onCall(
       "delivery.downloadToken": zipPath,
       updatedAt: FieldValue.serverTimestamp(),
     });
+
+    // --- Auto-create invoice draft ---
+    try {
+      const invoiceId = await createInvoiceDraft(
+        bookingId,
+        photographerId,
+        { email: booking.agent.email, name: booking.agent.name },
+        { name: booking.package.name, price: booking.package.price },
+      );
+      await bookingRef.update({ invoiceId });
+    } catch (err) {
+      console.error("Failed to create invoice draft:", err);
+      // Delivery succeeded — don't fail the entire operation
+    }
 
     console.log(
       `Delivered ${photosSnap.size} photos for booking ${bookingId}`,

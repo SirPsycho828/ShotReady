@@ -15,7 +15,7 @@ export { mediaOnUpload } from "./media";
 export { mediaOnPhotoDeleted, mediaRetentionCleanup } from "./media-cleanup";
 export { deliverPhotos } from "./delivery";
 export { routingOptimize } from "./routing";
-// export { paymentsCreateInvoice, paymentsStripeWebhook, paymentsOverdueCheck } from "./payments";
+export { paymentsSendInvoice, paymentsStripeWebhook, paymentsOverdueCheck } from "./payments";
 // export { notificationsOnBookingChange } from "./notifications";
 
 // Placeholder to verify deployment works

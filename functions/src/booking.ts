@@ -35,8 +35,9 @@ export const bookingGetByToken = onCall(
     const booking = bookingDoc.data();
     const bookingId = bookingDoc.id;
 
-    // Only proofing and delivered statuses get full data
-    if (booking.status !== "proofing" && booking.status !== "delivered") {
+    // Only these statuses get full data
+    const FULL_STATUSES = ["proofing", "delivered", "invoiced", "overdue", "paid"];
+    if (!FULL_STATUSES.includes(booking.status)) {
       return {
         booking: {
           id: bookingId,
@@ -181,6 +182,30 @@ export const bookingGetByToken = onCall(
         ).toISOString()
       : null;
 
+    // Get invoice data for invoiced/overdue/paid statuses
+    let invoice = undefined;
+    if (
+      ["invoiced", "overdue", "paid"].includes(booking.status) &&
+      booking.invoiceId
+    ) {
+      const invoiceSnap = await db
+        .collection("invoices")
+        .doc(booking.invoiceId)
+        .get();
+      if (invoiceSnap.exists) {
+        const inv = invoiceSnap.data()!;
+        invoice = {
+          lineItems: inv.lineItems as { description: string; amount: number }[],
+          total: inv.total as number,
+          status: inv.status as string,
+          dueDate: inv.dueDate?.toDate?.()?.toISOString() ?? null,
+          sentAt: inv.sentAt?.toDate?.()?.toISOString() ?? null,
+          paidAt: inv.paidAt?.toDate?.()?.toISOString() ?? null,
+          paymentUrl: inv.stripe?.paymentUrl ?? null,
+        };
+      }
+    }
+
     return {
       booking: bookingInfo,
       photos,
@@ -194,6 +219,7 @@ export const bookingGetByToken = onCall(
         photoCount: photosSnap.size,
         retentionExpires,
       },
+      invoice,
     };
   },
 );
