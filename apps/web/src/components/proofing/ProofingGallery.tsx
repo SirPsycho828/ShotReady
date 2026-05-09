@@ -66,22 +66,8 @@ export function ProofingGallery({
   }));
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="border-b border-gray-200 px-6 py-4">
-        {data.booking.photographerLogo && (
-          <img
-            src={data.booking.photographerLogo}
-            alt={data.booking.photographerName}
-            className="h-8 mb-2"
-          />
-        )}
-        <h1 className="text-lg font-bold text-gray-900">
-          Photos for {address}
-        </h1>
-      </header>
-
-      <main className="max-w-6xl mx-auto px-4 py-6 pb-24">
+    <div>
+      <div className="pb-24">
         {/* Post-submit success banner */}
         {isSubmitted && (
           <div className="mb-6 bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-green-800 text-sm">
@@ -141,7 +127,7 @@ export function ProofingGallery({
             />
           ))}
         </div>
-      </main>
+      </div>
 
       {/* Sticky approve button */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
