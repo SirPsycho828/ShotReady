@@ -54,15 +54,14 @@ export function BookingActions({ booking }: BookingActionsProps) {
   }
 
   async function handleStartShoot() {
-    await transition(booking.id, booking.status, "shooting", {
+    const success = await transition(booking.id, booking.status, "shooting", {
       "shooting.startedAt": firestore.FieldValue.serverTimestamp(),
     });
+    if (success) router.push(`/field-mode/${booking.id}`);
   }
 
-  async function handleCompleteShoot() {
-    await transition(booking.id, booking.status, "editing", {
-      "shooting.completedAt": firestore.FieldValue.serverTimestamp(),
-    });
+  function handleCompleteShoot() {
+    router.push(`/field-mode/${booking.id}`);
   }
 
   async function handleCloseJob() {
