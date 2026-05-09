@@ -16,7 +16,7 @@ export { mediaOnPhotoDeleted, mediaRetentionCleanup } from "./media-cleanup";
 export { deliverPhotos } from "./delivery";
 export { routingOptimize } from "./routing";
 export { paymentsSendInvoice, paymentsStripeWebhook, paymentsOverdueCheck } from "./payments";
-// export { notificationsOnBookingChange } from "./notifications";
+export { notificationsOnBookingCreated, notificationsOnBookingUpdated } from "./notifications";
 
 // Placeholder to verify deployment works
 import { onRequest } from "firebase-functions/v2/https";
