@@ -35,37 +35,14 @@ export const bookingGetByToken = onCall(
     const booking = bookingDoc.data();
     const bookingId = bookingDoc.id;
 
-    // Only these statuses get full data
-    const FULL_STATUSES = ["proofing", "delivered", "invoiced", "overdue", "paid"];
-    if (!FULL_STATUSES.includes(booking.status)) {
-      return {
-        booking: {
-          id: bookingId,
-          status: booking.status,
-          address: booking.property.address,
-          photographerName: "",
-          photographerLogo: null,
-          accentColor: "#2563EB",
-          agentEmail: booking.agent.email,
-        },
-        photos: [],
-        proofing: {
-          isSubmitted: !!booking.proofing?.completedAt,
-          selectedCount: booking.proofing?.selectedCount ?? null,
-        },
-      };
-    }
-
-    // Get photographer branding (for both proofing and delivered)
+    // Always fetch photographer branding (shell needs it for all statuses)
     const photographerSnap = await db
       .collection("photographers")
       .doc(booking.photographerId)
       .get();
     const photographer = photographerSnap.data();
 
-    const bucket = getStorage().bucket();
-
-    // Build booking info (shared between proofing and delivered)
+    // Build booking info (shared across all statuses)
     const bookingInfo = {
       id: bookingId,
       status: booking.status,
@@ -74,7 +51,24 @@ export const bookingGetByToken = onCall(
       photographerLogo: photographer?.branding?.logoUrl ?? null,
       accentColor: photographer?.branding?.accentColor ?? "#2563EB",
       agentEmail: booking.agent.email,
+      packageName: booking.package?.name ?? null,
+      scheduledDate: booking.schedule?.confirmedDate?.toDate?.()?.toISOString() ?? booking.schedule?.requestedDate?.toDate?.()?.toISOString() ?? null,
     };
+
+    // Statuses that get photos + delivery data
+    const FULL_STATUSES = ["proofing", "delivered", "invoiced", "overdue", "paid"];
+    if (!FULL_STATUSES.includes(booking.status)) {
+      return {
+        booking: bookingInfo,
+        photos: [],
+        proofing: {
+          isSubmitted: !!booking.proofing?.completedAt,
+          selectedCount: booking.proofing?.selectedCount ?? null,
+        },
+      };
+    }
+
+    const bucket = getStorage().bucket();
 
     // --- PROOFING: return all photos for selection ---
     if (booking.status === "proofing") {

@@ -18,6 +18,8 @@ export interface ProofingBookingInfo {
   photographerLogo: string | null;
   accentColor: string;
   agentEmail: string;
+  packageName: string | null;
+  scheduledDate: string | null;
 }
 
 export interface ProofingData {
