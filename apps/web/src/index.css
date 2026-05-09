@@ -12,7 +12,7 @@
   --color-text-primary: #111827;
   --color-text-secondary: #4B5563;
   --color-text-muted: #9CA3AF;
-  --color-accent: var(--photographer-accent, #2563EB);
+  --color-accent: var(--accent, #2563EB);
   --color-accent-hover: #3B82F6;
 }
 
