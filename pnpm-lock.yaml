@@ -22,6 +22,9 @@ importers:
       '@react-native-firebase/firestore':
         specifier: ^24.0.0
         version: 24.0.0(@react-native-firebase/app@24.0.0(expo@54.0.34)(react-native@0.81.5(@babel/core@7.29.0)(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.29.0)(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.1.17)(react@19.1.0))
+      '@react-native-firebase/functions':
+        specifier: ^24.0.0
+        version: 24.0.0(@react-native-firebase/app@24.0.0(expo@54.0.34)(react-native@0.81.5(@babel/core@7.29.0)(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))
       '@shotready/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -1730,6 +1733,11 @@ packages:
 
   '@react-native-firebase/firestore@24.0.0':
     resolution: {integrity: sha512-BRhpm9A6Bx50fxFWZOoAJ5PFacGnPI8iDZ5pKk0E2ATZCDRkx9pSb5TyAbnQtKmOX4RZcGzaiBrzZtLYqaHSEA==}
+    peerDependencies:
+      '@react-native-firebase/app': 24.0.0
+
+  '@react-native-firebase/functions@24.0.0':
+    resolution: {integrity: sha512-831TBgJgH0zeLby/drkFLpOumst1BaH+0xv4wQUw9H5x7TpwJbjLXMl6BLX79bVEX+7ZVDAxWzHnYGpwX0ihvQ==}
     peerDependencies:
       '@react-native-firebase/app': 24.0.0
 
@@ -7101,6 +7109,10 @@ snapshots:
       react-native-url-polyfill: 3.0.0(react-native@0.81.5(@babel/core@7.29.0)(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.1.17)(react@19.1.0))
     transitivePeerDependencies:
       - react-native
+
+  '@react-native-firebase/functions@24.0.0(@react-native-firebase/app@24.0.0(expo@54.0.34)(react-native@0.81.5(@babel/core@7.29.0)(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))':
+    dependencies:
+      '@react-native-firebase/app': 24.0.0(expo@54.0.34)(react-native@0.81.5(@babel/core@7.29.0)(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
 
   '@react-native/assets-registry@0.81.5': {}
 

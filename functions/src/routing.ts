@@ -265,7 +265,6 @@ function applyLightingSwaps(
 function buildStops(
   orderedWaypoints: WaypointInfo[],
   legDurationsSeconds: number[],
-  legDistanceMeters: number[],
   startMinutes: number
 ): RouteStop[] {
   let cursor = startMinutes;
@@ -460,7 +459,6 @@ export const routingOptimize = onCall(
     const stops = buildStops(
       orderedWaypoints,
       legDurationsSeconds,
-      legDistanceMeters,
       startMinutes
     );
 
