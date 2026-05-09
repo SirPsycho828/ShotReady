@@ -1,3 +1,121 @@
+# Search + Filtering UI Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Add client-side search and quick-filter chips to the Jobs dashboard so the photographer can narrow the job list by date range or status, and search across property address, agent name, and agent email.
+
+**Architecture:** A `FilterChipBar` component renders a horizontal ScrollView of pressable chips (All, Today, This Week, Pending, Overdue). The dashboard adds `activeFilter` and `searchQuery` state, filters the bookings array before the existing bucket-grouping logic, and renders a search icon in the header that expands to a TextInput. All filtering is client-side against the cached 50 bookings.
+
+**Tech Stack:** React Native (ScrollView, TextInput, Pressable), NativeWind, lucide-react-native (Search, X icons)
+
+---
+
+## File Structure
+
+```
+apps/mobile/src/
+├── components/
+│   └── FilterChipBar.tsx               # Create — horizontal scrollable chip bar
+├── app/
+│   └── (tabs)/
+│       └── index.tsx                   # Modify — add search + filter state and UI
+```
+
+## Parallelization Notes
+
+Task 1 (FilterChipBar) is independent.
+Task 2 (dashboard integration) depends on Task 1.
+Task 3 (typecheck + commit) depends on all.
+
+---
+
+### Task 1: FilterChipBar Component
+
+**Files:**
+- Create: `apps/mobile/src/components/FilterChipBar.tsx`
+
+- [ ] **Step 1: Create FilterChipBar component**
+
+A horizontally scrollable row of pressable chips. The active chip has accent background with white text; inactive chips have surfaceRaised background with secondary text.
+
+```tsx
+// apps/mobile/src/components/FilterChipBar.tsx
+import { ScrollView, Pressable, Text } from "react-native";
+
+interface Chip {
+  key: string;
+  label: string;
+}
+
+interface FilterChipBarProps {
+  chips: Chip[];
+  activeChip: string;
+  onSelect: (key: string) => void;
+}
+
+export function FilterChipBar({ chips, activeChip, onSelect }: FilterChipBarProps) {
+  return (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerClassName="gap-sm"
+    >
+      {chips.map((chip) => {
+        const isActive = chip.key === activeChip;
+        return (
+          <Pressable
+            key={chip.key}
+            onPress={() => onSelect(chip.key)}
+            className={`px-md py-xs rounded-pill ${isActive ? "bg-accent" : "bg-surface-raised"}`}
+          >
+            <Text
+              className={`text-caption ${isActive ? "text-white" : "text-text-secondary"}`}
+            >
+              {chip.label}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </ScrollView>
+  );
+}
+```
+
+- [ ] **Step 2: Verify file exists**
+
+Run: `ls apps/mobile/src/components/FilterChipBar.tsx`
+Expected: file exists
+
+---
+
+### Task 2: Dashboard Search + Filter Integration
+
+**Files:**
+- Modify: `apps/mobile/src/app/(tabs)/index.tsx`
+
+**Depends on:** Task 1 (FilterChipBar)
+
+- [ ] **Step 1: Read existing dashboard**
+
+Read: `apps/mobile/src/app/(tabs)/index.tsx`
+
+Current: SectionList with three-bucket grouping, no search or filter. Header shows "Jobs" title.
+
+- [ ] **Step 2: Rewrite dashboard with search and filter**
+
+Replace the entire file. Changes from current:
+1. Import `FilterChipBar`, `Search` icon, `X` icon, `TextInput`
+2. Add `activeFilter` state (string, default "all")
+3. Add `searchQuery` state (string, default "")
+4. Add `searchActive` state (boolean, default false)
+5. Define `FILTER_CHIPS` array
+6. Add `filteredBookings` useMemo that applies filter + search before bucket grouping
+7. Change existing bucket grouping to use `filteredBookings` instead of `bookings`
+8. Replace `ListHeaderComponent` with header that includes search toggle + FilterChipBar
+9. Add empty state for "no results" when filters/search produce zero bookings
+
+```tsx
+// apps/mobile/src/app/(tabs)/index.tsx
 import { View, Text, SectionList, RefreshControl, Pressable, TextInput } from "react-native";
 import { useState, useMemo, useCallback, useRef } from "react";
 import { useBookings, type BookingWithId } from "@/hooks/useBookings";
@@ -348,3 +466,49 @@ export default function JobsScreen() {
     </View>
   );
 }
+```
+
+- [ ] **Step 3: Verify changes**
+
+Run: `grep -c "FilterChipBar\|searchQuery\|activeFilter" apps/mobile/src/app/\(tabs\)/index.tsx`
+Expected: multiple matches
+
+---
+
+### Task 3: Typecheck + Commit
+
+**Depends on:** All previous tasks
+
+- [ ] **Step 1: Run typecheck**
+
+Run: `cd apps/mobile && npx tsc --noEmit`
+Expected: no errors. Fix any type issues before committing.
+
+- [ ] **Step 2: Stage and commit**
+
+```bash
+git add apps/mobile/src/components/FilterChipBar.tsx apps/mobile/src/app/\(tabs\)/index.tsx docs/superpowers/plans/2026-05-08-search-filter.md
+git commit -m "feat: add search and quick-filter chips to jobs dashboard
+
+- FilterChipBar component with All/Today/This Week/Pending/Overdue chips
+- Client-side search across property address, agent name, agent email
+- Search icon in header expands to inline TextInput
+- Filters narrow bookings before bucket grouping
+- No-results empty state with clear-filters action"
+```
+
+- [ ] **Step 3: Verify commit**
+
+Run: `git log --oneline -1`
+Expected: commit message visible
+
+---
+
+## Deferred Features
+
+| Feature | Spec Section | Reason |
+|---------|-------------|--------|
+| Notification bell in header | 08 — Notification Bell | Requires spec 19 (Notifications) |
+| Card swipe actions | 08 — Card Swipe Actions | Requires react-native-gesture-handler swipeable setup |
+| Bucket transition animations | 08 — Bucket Transition Animation | Requires Reanimated layout animations, polish item |
+| "View all" link on completed section | 08 — Completed bucket | Requires a full history screen |
