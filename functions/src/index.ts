@@ -11,7 +11,8 @@
 
 // Function groups will be imported here as they are implemented:
 // export { bookingCreate, bookingUpdateStatus, bookingGetByToken } from "./booking";
-// export { mediaOnUpload, mediaGenerateMlsExport, mediaGenerateDownloadUrl } from "./media";
+export { mediaOnUpload } from "./media";
+export { mediaOnPhotoDeleted, mediaRetentionCleanup } from "./media-cleanup";
 export { routingOptimize } from "./routing";
 // export { paymentsCreateInvoice, paymentsStripeWebhook, paymentsOverdueCheck } from "./payments";
 // export { notificationsOnBookingChange } from "./notifications";
