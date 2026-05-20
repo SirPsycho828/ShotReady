@@ -25,8 +25,8 @@ export function PhotoCell({
 }: PhotoCellProps) {
   return (
     <div
-      className={`relative rounded-lg overflow-hidden group transition-opacity ${
-        isSelected ? "opacity-100" : "opacity-60"
+      className={`relative rounded-lg overflow-hidden group img-zoom transition-all duration-[var(--duration-fast)] ${
+        isSelected ? "opacity-100 shadow-glow-sm" : "opacity-70 hover:opacity-90"
       }`}
       style={{
         border: isSelected
@@ -52,19 +52,19 @@ export function PhotoCell({
       {/* Selection checkbox */}
       <div className="absolute top-2 right-2 pointer-events-none">
         <div
-          className={`w-8 h-8 rounded-md flex items-center justify-center ${
-            isSelected ? "text-white" : "bg-black/30 border-2 border-white"
+          className={`w-7 h-7 rounded-md flex items-center justify-center transition-all duration-[var(--duration-fast)] ${
+            isSelected ? "text-white" : "bg-black/30 border-2 border-white/80"
           }`}
           style={isSelected ? { backgroundColor: accentColor } : undefined}
         >
-          {isSelected && <Check size={18} />}
+          {isSelected && <Check size={16} strokeWidth={2.5} />}
         </div>
       </div>
 
       {/* Expand icon */}
       <button
         type="button"
-        className="absolute bottom-2 right-2 p-1.5 bg-black/40 rounded-md opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity text-white"
+        className="absolute bottom-2 right-2 p-1.5 bg-black/50 backdrop-blur-sm rounded-md opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity text-white"
         onClick={(e) => {
           e.stopPropagation();
           onExpand();

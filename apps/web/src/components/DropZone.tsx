@@ -57,17 +57,28 @@ export function DropZone({ onFiles, disabled }: DropZoneProps) {
   return (
     <div>
       <div
-        onDragOver={(e) => { e.preventDefault(); if (!disabled) setDragging(true); }}
+        onDragOver={(e) => {
+          e.preventDefault();
+          if (!disabled) setDragging(true);
+        }}
         onDragLeave={() => setDragging(false)}
         onDrop={handleDrop}
         onClick={() => !disabled && inputRef.current?.click()}
-        className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-colors ${
-          dragging ? "border-accent bg-accent/5" : "border-border hover:border-text-muted"
+        className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-all duration-[var(--duration-fast)] ${
+          dragging
+            ? "border-ring bg-accent/5"
+            : "border-border hover:border-muted-foreground"
         } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
       >
-        <Upload className="mx-auto text-text-muted mb-3" size={32} />
-        <p className="text-text-primary">Drag photos here or click to browse</p>
-        <p className="text-text-muted text-sm mt-1">JPEG files, max 30 MB each</p>
+        <div className="w-12 h-12 rounded-lg bg-card border border-border mx-auto mb-3 flex items-center justify-center">
+          <Upload className="text-muted-foreground" size={22} />
+        </div>
+        <p className="text-foreground font-500 text-sm">
+          Drag photos here or click to browse
+        </p>
+        <p className="text-muted-foreground text-xs mt-1.5">
+          JPEG files, max 30 MB each
+        </p>
         <input
           ref={inputRef}
           type="file"
@@ -80,7 +91,9 @@ export function DropZone({ onFiles, disabled }: DropZoneProps) {
       {errors.length > 0 && (
         <div className="mt-3 space-y-1">
           {errors.map((err, i) => (
-            <p key={i} className="text-error text-sm">{err}</p>
+            <p key={i} className="text-destructive text-sm">
+              {err}
+            </p>
           ))}
         </div>
       )}

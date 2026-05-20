@@ -5,21 +5,50 @@ interface StatusMessageCardProps {
   iconColor?: string;
   heading: string;
   body: string;
+  imageUrl?: string;
+  imageAlt?: string;
 }
 
 export function StatusMessageCard({
   icon: Icon,
-  iconColor = "#6B7280",
+  iconColor,
   heading,
   body,
+  imageUrl,
+  imageAlt,
 }: StatusMessageCardProps) {
   return (
-    <div className="text-center py-12">
-      <Icon size={48} color={iconColor} className="mx-auto mb-4" />
-      <h2 className="text-xl font-bold text-gray-900 mb-2">{heading}</h2>
-      <p className="text-gray-500 text-sm max-w-md mx-auto leading-relaxed">
+    <div className="text-center py-14 animate-slide-in">
+      <div
+        className="w-14 h-14 rounded-lg mx-auto mb-5 flex items-center justify-center"
+        style={{
+          backgroundColor: iconColor
+            ? `${iconColor}12`
+            : "hsl(var(--muted))",
+        }}
+      >
+        <Icon
+          size={28}
+          color={iconColor ?? "hsl(var(--muted-foreground))"}
+          strokeWidth={1.5}
+        />
+      </div>
+      <h2 className="font-heading text-2xl font-500 text-foreground mb-2 tracking-tight">
+        {heading}
+      </h2>
+      <p className="text-muted-foreground text-sm max-w-md mx-auto leading-relaxed">
         {body}
       </p>
+      {imageUrl && (
+        <div className="mt-10 max-w-lg mx-auto rounded-lg overflow-hidden photo-glow">
+          <img
+            src={imageUrl}
+            alt={imageAlt ?? ""}
+            className="w-full h-48 object-cover"
+            loading="lazy"
+          />
+        </div>
+      )}
     </div>
   );
 }

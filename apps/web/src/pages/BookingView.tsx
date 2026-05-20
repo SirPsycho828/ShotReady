@@ -1,7 +1,12 @@
 import { useParams } from "react-router-dom";
 import {
-  CheckCircle, Clock, Camera, XCircle, Archive,
-  AlertCircle, WifiOff,
+  CheckCircle,
+  Clock,
+  Camera,
+  XCircle,
+  Archive,
+  AlertCircle,
+  WifiOff,
 } from "lucide-react";
 import { useProofingGallery } from "../hooks/useProofingGallery";
 import { ShellLayout } from "../components/shell/ShellLayout";
@@ -19,12 +24,15 @@ export default function BookingView() {
   if (gallery.loading) {
     return (
       <ShellLayout branding={null}>
-        <div className="animate-pulse space-y-4 py-12">
-          <div className="h-6 bg-gray-200 rounded w-3/4 mx-auto" />
-          <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto" />
+        <div className="space-y-4 py-12">
+          <div className="h-6 rounded-md w-3/4 mx-auto animate-shimmer" />
+          <div className="h-4 rounded-md w-1/2 mx-auto animate-shimmer" />
           <div className="grid grid-cols-3 gap-2 mt-8">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="aspect-[4/3] bg-gray-200 rounded-lg" />
+              <div
+                key={i}
+                className="aspect-[4/3] rounded-md animate-shimmer"
+              />
             ))}
           </div>
         </div>
@@ -34,22 +42,28 @@ export default function BookingView() {
 
   if (gallery.error || !gallery.data) {
     const errorMsg = gallery.error ?? "";
-    const isNotFound = errorMsg.includes("not found") || errorMsg.includes("invalid") || errorMsg.includes("Invalid");
-    const isNetwork = errorMsg.includes("network") || errorMsg.includes("Failed to fetch") || errorMsg.includes("INTERNAL");
+    const isNotFound =
+      errorMsg.includes("not found") ||
+      errorMsg.includes("invalid") ||
+      errorMsg.includes("Invalid");
+    const isNetwork =
+      errorMsg.includes("network") ||
+      errorMsg.includes("Failed to fetch") ||
+      errorMsg.includes("INTERNAL");
 
     if (isNetwork) {
       return (
         <ShellLayout branding={null}>
           <StatusMessageCard
             icon={WifiOff}
-            iconColor="#EF4444"
+            iconColor="hsl(var(--destructive))"
             heading="Unable to load"
             body="Please check your connection and try again."
           />
           <div className="text-center">
             <button
               onClick={() => window.location.reload()}
-              className="px-6 py-2.5 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800"
+              className="px-6 py-2.5 bg-primary text-primary-foreground rounded-md text-sm font-600 tracking-[0.05em] uppercase hover:opacity-90 transition-opacity"
             >
               Try Again
             </button>
@@ -62,7 +76,7 @@ export default function BookingView() {
       <ShellLayout branding={null}>
         <StatusMessageCard
           icon={AlertCircle}
-          iconColor="#EF4444"
+          iconColor="hsl(var(--destructive))"
           heading={isNotFound ? "This link isn't valid" : "Something went wrong"}
           body={
             isNotFound
@@ -116,9 +130,11 @@ function BookingContent({
         <>
           <StatusMessageCard
             icon={Clock}
-            iconColor="#F59E0B"
+            iconColor="hsl(var(--warning))"
             heading="Your booking request has been submitted!"
             body={`You'll receive an email when ${data.booking.photographerName} responds.`}
+            imageUrl="/images/feature-exterior.jpg"
+            imageAlt="Modern home with pool"
           />
           <PropertySummaryCard address={address} packageName={packageName} />
         </>
@@ -129,9 +145,11 @@ function BookingContent({
         <>
           <StatusMessageCard
             icon={CheckCircle}
-            iconColor="#22C55E"
+            iconColor="hsl(var(--success))"
             heading="Shoot confirmed!"
             body={`${data.booking.photographerName} has confirmed your booking.`}
+            imageUrl="/images/hero-twilight.jpg"
+            imageAlt="Luxury home at twilight"
           />
           <PropertySummaryCard
             address={address}
@@ -147,9 +165,11 @@ function BookingContent({
         <>
           <StatusMessageCard
             icon={Camera}
-            iconColor="#3B82F6"
+            iconColor="hsl(var(--accent))"
             heading="Photos in progress"
             body="Your photographer is working on your photos. You'll receive an email when they're ready for review."
+            imageUrl="/images/feature-interior.jpg"
+            imageAlt="Bright modern kitchen"
           />
           <PropertySummaryCard address={address} packageName={packageName} />
         </>
@@ -188,7 +208,7 @@ function BookingContent({
       return (
         <StatusMessageCard
           icon={XCircle}
-          iconColor="#EF4444"
+          iconColor="hsl(var(--destructive))"
           heading="Booking declined"
           body="This booking was not accepted. Please contact your photographer directly for more information."
         />
@@ -199,7 +219,7 @@ function BookingContent({
         <>
           <StatusMessageCard
             icon={XCircle}
-            iconColor="#6B7280"
+            iconColor="hsl(var(--muted-foreground))"
             heading="Booking cancelled"
             body="This booking has been cancelled."
           />
@@ -212,7 +232,7 @@ function BookingContent({
         <>
           <StatusMessageCard
             icon={Archive}
-            iconColor="#6B7280"
+            iconColor="hsl(var(--muted-foreground))"
             heading="Booking archived"
             body="This booking has been archived."
           />
@@ -224,7 +244,7 @@ function BookingContent({
       return (
         <StatusMessageCard
           icon={Clock}
-          iconColor="#6B7280"
+          iconColor="hsl(var(--muted-foreground))"
           heading="Your Booking"
           body={`Current status: ${status}`}
         />

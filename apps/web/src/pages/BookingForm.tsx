@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { collection, addDoc, serverTimestamp, Timestamp } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  Timestamp,
+} from "firebase/firestore";
 import { db } from "../lib/firebase";
 import { usePhotographerBySlug } from "../hooks/usePhotographerBySlug";
 import { PackageCard } from "../components/PackageCard";
@@ -22,22 +27,28 @@ function FormField({
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-text-primary mb-1">
+      <label className="block text-xs font-body font-500 tracking-[0.04em] uppercase text-muted-foreground mb-1.5">
         {label}
-        {required && <span className="text-error ml-0.5">*</span>}
+        {required && <span className="text-destructive ml-0.5">*</span>}
       </label>
       {children}
-      {error && <p className="text-xs text-error mt-1">{error}</p>}
+      {error && (
+        <p className="text-xs text-destructive mt-1.5">{error}</p>
+      )}
     </div>
   );
 }
 
 const inputClass =
-  "w-full px-3 py-2 rounded-lg border border-border bg-white text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:border-border-focus focus:ring-1 focus:ring-border-focus";
+  "w-full px-3.5 py-2.5 rounded-md border border-input bg-card text-card-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-colors";
 
 export default function BookingForm() {
   const { slug } = useParams<{ slug: string }>();
-  const { data, isLoading, error: loadError } = usePhotographerBySlug(slug);
+  const {
+    data,
+    isLoading,
+    error: loadError,
+  } = usePhotographerBySlug(slug);
 
   const [form, setForm] = useState({
     name: "",
@@ -61,20 +72,27 @@ export default function BookingForm() {
 
   function updateField(field: string, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) setErrors((prev) => { const next = { ...prev }; delete next[field]; return next; });
+    if (errors[field])
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
   }
 
   function validate(): Record<string, string> {
     const errs: Record<string, string> = {};
     if (!form.name.trim()) errs.name = "This field is required";
     if (!form.email.trim()) errs.email = "This field is required";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = "Please enter a valid email address";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+      errs.email = "Please enter a valid email address";
     if (!form.address.trim()) errs.address = "This field is required";
     if (!form.city.trim()) errs.city = "This field is required";
     if (!form.state.trim()) errs.state = "This field is required";
     if (!form.zip.trim()) errs.zip = "This field is required";
     if (!form.selectedDate) errs.selectedDate = "Please select a date";
-    if (!form.selectedPackageId) errs.selectedPackageId = "Please select a package";
+    if (!form.selectedPackageId)
+      errs.selectedPackageId = "Please select a package";
     return errs;
   }
 
@@ -91,7 +109,9 @@ export default function BookingForm() {
     setErrors({});
 
     try {
-      const selectedPkg = data.packages.find((p) => p.id === form.selectedPackageId)!;
+      const selectedPkg = data.packages.find(
+        (p) => p.id === form.selectedPackageId,
+      )!;
       const agentToken = crypto.randomUUID();
 
       await addDoc(collection(db, "bookings"), {
@@ -116,7 +136,9 @@ export default function BookingForm() {
           orientation: null,
         },
         schedule: {
-          requestedDate: Timestamp.fromDate(new Date(form.selectedDate + "T12:00:00")),
+          requestedDate: Timestamp.fromDate(
+            new Date(form.selectedDate + "T12:00:00"),
+          ),
           confirmedDate: null,
           startTime: null,
           estimatedDuration: selectedPkg.estimatedDuration,
@@ -161,7 +183,10 @@ export default function BookingForm() {
     return (
       <ShellLayout branding={null}>
         <div className="flex items-center justify-center py-20">
-          <Loader2 size={32} className="animate-spin text-gray-400" />
+          <Loader2
+            size={28}
+            className="animate-spin text-muted-foreground"
+          />
         </div>
       </ShellLayout>
     );
@@ -172,7 +197,7 @@ export default function BookingForm() {
       <ShellLayout branding={null}>
         <StatusMessageCard
           icon={AlertCircle}
-          iconColor="#EF4444"
+          iconColor="hsl(var(--destructive))"
           heading={loadError ?? "Something went wrong"}
           body="Please check the link from your photographer."
         />
@@ -190,9 +215,11 @@ export default function BookingForm() {
       <ShellLayout branding={branding}>
         <StatusMessageCard
           icon={CheckCircle2}
-          iconColor="#22C55E"
+          iconColor="hsl(var(--success))"
           heading="Your booking request has been submitted!"
           body={`You'll receive an email at ${form.email} when ${data.photographer.businessName} responds.`}
+          imageUrl="/images/feature-exterior.jpg"
+          imageAlt="Modern home exterior with pool"
         />
       </ShellLayout>
     );
@@ -207,14 +234,10 @@ export default function BookingForm() {
 
   return (
     <ShellLayout branding={branding}>
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-8"
-        noValidate
-      >
+      <form onSubmit={handleSubmit} className="space-y-10" noValidate>
         {/* Section 1: Your Information */}
         <section className="space-y-4">
-          <h2 className="text-xs font-semibold text-text-muted uppercase tracking-wider">
+          <h2 className="font-heading text-lg font-500 text-foreground tracking-tight border-b border-border pb-2">
             Your Information
           </h2>
           <FormField label="Your name" required error={errors.name}>
@@ -257,10 +280,14 @@ export default function BookingForm() {
 
         {/* Section 2: Property Details */}
         <section className="space-y-4">
-          <h2 className="text-xs font-semibold text-text-muted uppercase tracking-wider">
+          <h2 className="font-heading text-lg font-500 text-foreground tracking-tight border-b border-border pb-2">
             Property Details
           </h2>
-          <FormField label="Property address" required error={errors.address}>
+          <FormField
+            label="Property address"
+            required
+            error={errors.address}
+          >
             <input
               type="text"
               className={inputClass}
@@ -325,10 +352,10 @@ export default function BookingForm() {
 
         {/* Section 3: Preferred Date */}
         <section className="space-y-4">
-          <h2 className="text-xs font-semibold text-text-muted uppercase tracking-wider">
+          <h2 className="font-heading text-lg font-500 text-foreground tracking-tight border-b border-border pb-2">
             Preferred Date
           </h2>
-          <div className="bg-surface rounded-xl p-4 border border-border">
+          <div className="bg-card rounded-lg p-5 border border-border shadow-sm">
             <BookingDatePicker
               selectedDate={form.selectedDate}
               onSelectDate={(date) => updateField("selectedDate", date)}
@@ -337,16 +364,18 @@ export default function BookingForm() {
             />
           </div>
           {errors.selectedDate && (
-            <p className="text-xs text-error">{errors.selectedDate}</p>
+            <p className="text-xs text-destructive">{errors.selectedDate}</p>
           )}
         </section>
 
         {/* Section 4: Select a Package */}
         <section className="space-y-4">
-          <h2 className="text-xs font-semibold text-text-muted uppercase tracking-wider">
+          <h2 className="font-heading text-lg font-500 text-foreground tracking-tight border-b border-border pb-2">
             Select a Package
           </h2>
-          <div className={`grid gap-3 ${packages.length >= 2 ? "sm:grid-cols-2" : ""}`}>
+          <div
+            className={`grid gap-3 ${packages.length >= 2 ? "sm:grid-cols-2" : ""}`}
+          >
             {packages.map((pkg) => (
               <PackageCard
                 key={pkg.id}
@@ -360,17 +389,20 @@ export default function BookingForm() {
               />
             ))}
           </div>
-          <p className="text-xs text-text-muted">
-            Not sure which to pick? Choose the closest option — your photographer can adjust after booking.
+          <p className="text-xs text-muted-foreground">
+            Not sure which to pick? Choose the closest option — your
+            photographer can adjust after booking.
           </p>
           {errors.selectedPackageId && (
-            <p className="text-xs text-error">{errors.selectedPackageId}</p>
+            <p className="text-xs text-destructive">
+              {errors.selectedPackageId}
+            </p>
           )}
         </section>
 
         {/* Section 5: Additional Notes */}
         <section className="space-y-4">
-          <h2 className="text-xs font-semibold text-text-muted uppercase tracking-wider">
+          <h2 className="font-heading text-lg font-500 text-foreground tracking-tight border-b border-border pb-2">
             Anything Else?
           </h2>
           <FormField label="Notes for your photographer">
@@ -387,7 +419,7 @@ export default function BookingForm() {
 
         {/* Submit */}
         {errors.submit && (
-          <div className="flex items-center gap-2 text-sm text-error bg-error/10 rounded-lg p-3">
+          <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 rounded-md p-3">
             <AlertCircle size={16} />
             {errors.submit}
           </div>
@@ -396,10 +428,10 @@ export default function BookingForm() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full py-3 rounded-xl bg-accent text-white font-semibold text-base hover:bg-accent-hover transition-colors disabled:opacity-50"
+          className="w-full py-3.5 rounded-md bg-primary text-primary-foreground font-body text-sm font-600 tracking-[0.05em] uppercase hover:opacity-90 transition-opacity disabled:opacity-50"
         >
           {submitting ? (
-            <Loader2 size={20} className="animate-spin mx-auto" />
+            <Loader2 size={18} className="animate-spin mx-auto" />
           ) : (
             "Submit Booking Request"
           )}

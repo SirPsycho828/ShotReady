@@ -35,29 +35,38 @@ export function PackageCard({
     <button
       type="button"
       onClick={onSelect}
-      className={`w-full text-left p-4 rounded-xl border-2 transition-colors ${
+      className={`w-full text-left p-5 rounded-lg border-2 transition-all duration-[var(--duration-fast)] ${
         isSelected
-          ? "border-accent bg-accent/5"
-          : "border-border bg-surface hover:border-text-muted"
+          ? "border-ring bg-accent/5 shadow-md"
+          : "border-border bg-card hover:border-muted-foreground hover:shadow-sm"
       }`}
     >
       <div className="flex items-start justify-between">
-        <h3 className="text-lg font-semibold text-text-primary">{name}</h3>
-        <span className="text-lg font-bold text-accent">{formatPrice(price)}</span>
+        <h3 className="font-heading text-lg font-500 text-card-foreground">
+          {name}
+        </h3>
+        <span className="font-heading text-xl font-600 text-accent">
+          {formatPrice(price)}
+        </span>
       </div>
       {description && (
-        <p className="text-sm text-text-secondary mt-1 line-clamp-2">{description}</p>
+        <p className="text-sm text-muted-foreground mt-1 line-clamp-2 leading-relaxed">
+          {description}
+        </p>
       )}
-      <ul className="mt-3 space-y-1">
+      <ul className="mt-4 space-y-1.5">
         {deliverables.map((d) => (
-          <li key={d} className="flex items-center text-sm text-text-secondary">
+          <li
+            key={d}
+            className="flex items-center text-sm text-secondary-foreground"
+          >
             <Check size={14} className="text-success mr-2 shrink-0" />
             {d}
           </li>
         ))}
       </ul>
-      <div className="flex items-center mt-3 text-xs text-text-muted">
-        <Clock size={12} className="mr-1" />
+      <div className="flex items-center mt-4 pt-3 border-t border-border/50 text-xs text-muted-foreground">
+        <Clock size={12} className="mr-1.5" />
         Approx. {formatDuration(estimatedDuration)}
       </div>
     </button>

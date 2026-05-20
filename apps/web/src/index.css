@@ -2,37 +2,258 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ──────────────────────────────────────────
+   Design System — ShotReady
+   Direction: Darkroom
+   ────────────────────────────────────────── */
+
 :root {
-  /* Agent-facing pages: light mode only */
-  --color-background: #FFFFFF;
-  --color-surface: #F8F9FB;
-  --color-surface-raised: #F1F3F7;
-  --color-border: #D1D5E0;
-  --color-border-focus: #1D4ED8;
-  --color-text-primary: #111827;
-  --color-text-secondary: #4B5563;
-  --color-text-muted: #9CA3AF;
-  --color-accent: var(--accent, #2563EB);
-  --color-accent-hover: #3B82F6;
+  /* Typography */
+  --font-heading: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Outfit', system-ui, sans-serif;
+
+  /* Core Colors */
+  --primary: 20 13% 9%;
+  --primary-foreground: 36 43% 90%;
+  --secondary: 25 18% 12%;
+  --secondary-foreground: 30 28% 83%;
+  --accent: 31 55% 64%;
+  --accent-foreground: 20 25% 8%;
+
+  /* Surfaces */
+  --background: 20 11% 5%;
+  --foreground: 36 43% 90%;
+  --card: 26 13% 10%;
+  --card-foreground: 36 43% 90%;
+  --muted: 24 14% 15%;
+  --muted-foreground: 28 10% 49%;
+
+  /* Borders & Input */
+  --border: 26 13% 17%;
+  --input: 26 15% 20%;
+  --ring: 31 55% 64%;
+
+  /* Semantic */
+  --destructive: 8 55% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --success: 122 27% 48%;
+  --warning: 38 65% 53%;
+
+  /* Radius */
+  --radius-sm: 3px;
+  --radius-md: 5px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+
+  /* Shadows (dark surface) */
+  --shadow-sm: 0 1px 3px rgba(15, 13, 12, 0.4);
+  --shadow-md: 0 4px 12px rgba(15, 13, 12, 0.5);
+  --shadow-lg: 0 8px 24px rgba(15, 13, 12, 0.6);
+  --shadow-xl: 0 20px 48px rgba(15, 13, 12, 0.7);
+
+  /* Glow (signature — enlarger light) */
+  --glow-sm: 0 0 20px rgba(212, 165, 116, 0.08);
+  --glow-md: 0 0 40px rgba(212, 165, 116, 0.12);
+  --glow-lg: 0 0 60px rgba(212, 165, 116, 0.18);
+
+  /* Animation */
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+  --duration-develop: 600ms;
+  --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --easing-out: cubic-bezier(0, 0, 0.2, 1);
+
+  /* Photographer accent override (agent pages set via JS) */
+  --photographer-accent: var(--accent);
 }
 
-/* Web companion: dark mode for photographer */
-.companion-theme {
-  --color-background: #0F1117;
-  --color-surface: #1A1D27;
-  --color-surface-raised: #242836;
-  --color-border: #2E3347;
-  --color-border-focus: #2563EB;
-  --color-text-primary: #F1F3F9;
-  --color-text-secondary: #9BA3BF;
-  --color-text-muted: #5E6687;
-  --color-accent: #2563EB;
-  --color-accent-hover: #3B82F6;
-}
+/* ── Base Styles ── */
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-body);
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
   margin: 0;
-  background-color: var(--color-background);
-  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+}
+
+/* ── Signature Animations — Enlarger Glow ── */
+
+@keyframes develop {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: var(--glow-sm); }
+  50% { box-shadow: var(--glow-md); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-develop {
+  animation: develop var(--duration-develop) var(--easing-out) both;
+}
+
+.animate-slide-in {
+  animation: slide-fade-in var(--duration-normal) var(--easing-out) both;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted)) 0%,
+    hsl(var(--accent) / 0.15) 50%,
+    hsl(var(--muted)) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+
+/* Photo glow effect — the enlarger light */
+.photo-glow {
+  box-shadow: var(--glow-sm);
+  transition: box-shadow var(--duration-normal) var(--easing-default),
+              transform var(--duration-normal) var(--easing-default);
+}
+
+.photo-glow:hover {
+  box-shadow: var(--glow-md);
+  transform: translateY(-2px);
+}
+
+/* Hero-level glow */
+.photo-glow-lg {
+  box-shadow: var(--glow-md);
+  transition: box-shadow var(--duration-normal) var(--easing-default);
+}
+
+.photo-glow-lg:hover {
+  box-shadow: var(--glow-lg);
+}
+
+/* ── Stagger Children ── */
+
+.stagger-children > * {
+  animation: slide-fade-in var(--duration-normal) var(--easing-out) both;
+}
+.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 50ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 100ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 150ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 200ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 250ms; }
+.stagger-children > *:nth-child(7) { animation-delay: 300ms; }
+.stagger-children > *:nth-child(8) { animation-delay: 350ms; }
+.stagger-children > *:nth-child(9) { animation-delay: 400ms; }
+.stagger-children > *:nth-child(10) { animation-delay: 450ms; }
+.stagger-children > *:nth-child(n+11) { animation-delay: 500ms; }
+
+/* ── Scroll-Triggered Reveals ── */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity var(--duration-slow) var(--easing-out),
+              transform var(--duration-slow) var(--easing-out);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Button Micro-Interactions ── */
+
+.btn-accent {
+  transition: transform var(--duration-fast) var(--easing-default),
+              opacity var(--duration-fast) var(--easing-default),
+              box-shadow var(--duration-fast) var(--easing-default);
+}
+
+.btn-accent:hover {
+  transform: scale(1.02);
+  box-shadow: var(--glow-sm);
+}
+
+.btn-accent:active {
+  transform: scale(0.98);
+  box-shadow: none;
+}
+
+/* ── Image Hover Zoom (galleries) ── */
+
+.img-zoom {
+  overflow: hidden;
+}
+
+.img-zoom img {
+  transition: transform var(--duration-normal) var(--easing-default);
+}
+
+.img-zoom:hover img {
+  transform: scale(1.04);
+}
+
+/* ── Input Focus Glow ── */
+
+input:focus, textarea:focus, select:focus {
+  box-shadow: 0 0 0 1px hsl(var(--ring)), var(--glow-sm);
+}
+
+/* ── Focus States ── */
+
+*:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ── Smooth Scroll ── */
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ── Reduced Motion ── */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
 }

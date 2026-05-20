@@ -27,7 +27,10 @@ export function Lightbox({
   address,
 }: LightboxProps) {
   const [currentIndex, setCurrentIndex] = useState(() =>
-    Math.max(0, photos.findIndex((p) => p.id === initialId)),
+    Math.max(
+      0,
+      photos.findIndex((p) => p.id === initialId),
+    ),
   );
   const current = photos[currentIndex];
 
@@ -40,7 +43,6 @@ export function Lightbox({
     [],
   );
 
-  // Keyboard navigation
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
@@ -59,19 +61,19 @@ export function Lightbox({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+      className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
       onClick={onClose}
     >
       {/* Header bar */}
       <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-4 z-10">
         <button
           onClick={onClose}
-          className="text-white hover:text-gray-300 transition-colors"
+          className="p-2 text-white/70 hover:text-white transition-colors"
           aria-label="Close lightbox"
         >
-          <X size={24} />
+          <X size={22} />
         </button>
-        <span className="text-white text-sm font-medium">
+        <span className="text-white/70 text-sm font-body font-500 tracking-wide">
           {currentIndex + 1} / {photos.length}
         </span>
         <button
@@ -80,10 +82,10 @@ export function Lightbox({
             if (!isReadOnly) onToggle(current.id);
           }}
           disabled={isReadOnly}
-          className={`w-8 h-8 rounded-md flex items-center justify-center transition-colors ${
+          className={`w-8 h-8 rounded-md flex items-center justify-center transition-all duration-[var(--duration-fast)] ${
             current.isSelected
               ? "text-white"
-              : "bg-white/20 border-2 border-white"
+              : "bg-white/15 border-2 border-white/60"
           }`}
           style={
             current.isSelected ? { backgroundColor: accentColor } : undefined
@@ -109,26 +111,26 @@ export function Lightbox({
       {/* Navigation arrows */}
       {currentIndex > 0 && (
         <button
-          className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 p-2 transition-colors"
+          className="absolute left-4 top-1/2 -translate-y-1/2 p-3 text-white/50 hover:text-white transition-colors"
           onClick={(e) => {
             e.stopPropagation();
             goPrev();
           }}
           aria-label="Previous photo"
         >
-          <ChevronLeft size={36} />
+          <ChevronLeft size={32} />
         </button>
       )}
       {currentIndex < photos.length - 1 && (
         <button
-          className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 p-2 transition-colors"
+          className="absolute right-4 top-1/2 -translate-y-1/2 p-3 text-white/50 hover:text-white transition-colors"
           onClick={(e) => {
             e.stopPropagation();
             goNext();
           }}
           aria-label="Next photo"
         >
-          <ChevronRight size={36} />
+          <ChevronRight size={32} />
         </button>
       )}
     </div>

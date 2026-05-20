@@ -54,16 +54,32 @@ export function BookingDatePicker({
     const startOffset = (firstDay.getDay() + 6) % 7;
     const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
 
-    const result: { date: Date; dateStr: string; inMonth: boolean; available: boolean }[] = [];
+    const result: {
+      date: Date;
+      dateStr: string;
+      inMonth: boolean;
+      available: boolean;
+    }[] = [];
 
     for (let i = 0; i < startOffset; i++) {
       const d = new Date(viewYear, viewMonth, 1 - startOffset + i);
-      result.push({ date: d, dateStr: getDateStr(d), inMonth: false, available: false });
+      result.push({
+        date: d,
+        dateStr: getDateStr(d),
+        inMonth: false,
+        available: false,
+      });
     }
 
     for (let i = 1; i <= daysInMonth; i++) {
       const d = new Date(viewYear, viewMonth, i);
-      const available = isDateAvailable(d, today, maxDate, availabilityWindows, blockedDates);
+      const available = isDateAvailable(
+        d,
+        today,
+        maxDate,
+        availabilityWindows,
+        blockedDates,
+      );
       result.push({ date: d, dateStr: getDateStr(d), inMonth: true, available });
     }
 
@@ -71,7 +87,12 @@ export function BookingDatePicker({
     if (remaining < 7) {
       for (let i = 1; i <= remaining; i++) {
         const d = new Date(viewYear, viewMonth + 1, i);
-        result.push({ date: d, dateStr: getDateStr(d), inMonth: false, available: false });
+        result.push({
+          date: d,
+          dateStr: getDateStr(d),
+          inMonth: false,
+          available: false,
+        });
       }
     }
 
@@ -108,26 +129,28 @@ export function BookingDatePicker({
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-4">
         <button
           type="button"
           onClick={handlePrev}
           disabled={!canGoPrev}
-          className="p-1 rounded hover:bg-surface-raised disabled:opacity-30"
+          className="p-1.5 rounded-md hover:bg-secondary disabled:opacity-30 transition-colors"
         >
-          <ChevronLeft size={20} className="text-text-secondary" />
+          <ChevronLeft size={18} className="text-muted-foreground" />
         </button>
-        <span className="text-sm font-medium text-text-primary">{monthLabel}</span>
+        <span className="font-heading text-sm font-500 text-foreground">
+          {monthLabel}
+        </span>
         <button
           type="button"
           onClick={handleNext}
           disabled={!canGoNext}
-          className="p-1 rounded hover:bg-surface-raised disabled:opacity-30"
+          className="p-1.5 rounded-md hover:bg-secondary disabled:opacity-30 transition-colors"
         >
-          <ChevronRight size={20} className="text-text-secondary" />
+          <ChevronRight size={18} className="text-muted-foreground" />
         </button>
       </div>
-      <div className="grid grid-cols-7 gap-1 text-center text-xs text-text-muted mb-1">
+      <div className="grid grid-cols-7 gap-1 text-center text-[11px] text-muted-foreground font-500 tracking-wider uppercase mb-2">
         {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
           <div key={d}>{d}</div>
         ))}
@@ -142,12 +165,12 @@ export function BookingDatePicker({
               key={cell.dateStr}
               disabled={!cell.available}
               onClick={() => onSelectDate(cell.dateStr)}
-              className={`h-9 rounded-lg text-sm transition-colors
-                ${!cell.inMonth ? "text-text-muted/30" : ""}
-                ${cell.inMonth && !cell.available ? "text-text-muted" : ""}
-                ${cell.available && !isSelected ? "text-text-primary hover:bg-surface-raised" : ""}
-                ${isSelected ? "bg-accent text-white font-semibold" : ""}
-                ${isToday && !isSelected ? "ring-1 ring-accent" : ""}
+              className={`h-9 rounded-md text-sm transition-all duration-[var(--duration-fast)]
+                ${!cell.inMonth ? "text-muted-foreground/30" : ""}
+                ${cell.inMonth && !cell.available ? "text-muted-foreground" : ""}
+                ${cell.available && !isSelected ? "text-foreground hover:bg-secondary" : ""}
+                ${isSelected ? "bg-accent text-white font-600 shadow-sm" : ""}
+                ${isToday && !isSelected ? "ring-1 ring-ring" : ""}
               `}
             >
               {cell.date.getDate()}

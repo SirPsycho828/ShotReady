@@ -22,8 +22,8 @@ export function DownloadPage({ data }: DownloadPageProps) {
     : null;
 
   return (
-    <div>
-      <p className="text-gray-700 mb-6">
+    <div className="animate-slide-in">
+      <p className="text-muted-foreground text-sm mb-6">
         {address} &middot; {delivery.photoCount} photos
       </p>
 
@@ -31,27 +31,27 @@ export function DownloadPage({ data }: DownloadPageProps) {
         <a
           href={delivery.downloadUrl}
           download
-          className="flex items-center justify-center gap-3 w-full py-4 rounded-lg text-white font-semibold text-lg transition-opacity hover:opacity-90"
+          className="flex items-center justify-center gap-3 w-full py-4 rounded-md text-white font-body text-sm font-600 tracking-[0.05em] uppercase transition-opacity hover:opacity-90 shadow-md"
           style={{ backgroundColor: accentColor }}
         >
-          <Download size={22} />
+          <Download size={20} />
           Download All Photos ({sizeMB} MB)
         </a>
       ) : (
-        <div className="w-full py-4 rounded-lg bg-gray-200 text-gray-500 font-semibold text-lg text-center">
+        <div className="w-full py-4 rounded-md bg-muted text-muted-foreground font-body text-sm font-600 tracking-[0.05em] uppercase text-center">
           Download unavailable
         </div>
       )}
 
       {retentionDate && (
-        <p className="text-gray-500 text-sm text-center mt-3">
+        <p className="text-muted-foreground text-xs text-center mt-3">
           Photos available for 90 days (until {retentionDate})
         </p>
       )}
 
       {data.photos.length > 0 && (
         <div className="mt-10">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">
+          <h2 className="text-xs font-body font-500 tracking-[0.1em] uppercase text-muted-foreground mb-4">
             Preview
           </h2>
           <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2">
@@ -60,7 +60,7 @@ export function DownloadPage({ data }: DownloadPageProps) {
                 key={photo.id}
                 src={photo.thumbnailUrl}
                 alt={`Photo ${i + 1}`}
-                className="w-full aspect-[4/3] object-cover rounded-lg"
+                className="w-full aspect-[4/3] object-cover rounded-md"
                 loading="lazy"
               />
             ))}

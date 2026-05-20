@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
   signOut,
   browserSessionPersistence,
   browserLocalPersistence,
@@ -15,6 +18,10 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!auth) {
+      setLoading(false);
+      return;
+    }
     const unsubscribe = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setLoading(false);
@@ -27,9 +34,19 @@ export function useAuth() {
     return signInWithEmailAndPassword(auth, email, password);
   }
 
+  async function signUp(email: string, password: string) {
+    await setPersistence(auth, browserLocalPersistence);
+    return createUserWithEmailAndPassword(auth, email, password);
+  }
+
+  async function signInWithGoogle() {
+    const provider = new GoogleAuthProvider();
+    return signInWithPopup(auth, provider);
+  }
+
   async function logOut() {
     return signOut(auth);
   }
 
-  return { user, loading, signIn, logOut };
+  return { user, loading, signIn, signUp, signInWithGoogle, logOut };
 }
