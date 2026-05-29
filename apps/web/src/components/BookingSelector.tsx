@@ -1,5 +1,5 @@
 import type { BookingWithId } from "../hooks/useEditingBookings";
-import { Camera, ImageIcon, Upload, ArrowRight } from "lucide-react";
+import { ImageIcon, Upload, ArrowRight } from "lucide-react";
 
 interface BookingSelectorProps {
   bookings: BookingWithId[];
