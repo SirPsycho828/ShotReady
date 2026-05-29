@@ -16,3 +16,5 @@ ui-debug.log
 *.mobileprovision
 *.orig.*
 web-build/
+.claude/
+.playwright-mcp/
