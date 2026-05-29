@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <style>
+    rect.bg { fill: #0F0D0C; }
+    .frame { stroke: #D4A574; fill: none; stroke-width: 2; stroke-linecap: round; }
+    .dot { fill: #D4A574; }
+    @media (prefers-color-scheme: light) {
+      rect.bg { fill: #F0E8DC; }
+      .frame { stroke: #1A1614; }
+      .dot { fill: #1A1614; }
+    }
+  </style>
+  <rect class="bg" width="32" height="32" rx="6"/>
+  <!-- Viewfinder corner brackets -->
+  <path class="frame" d="M8 12 L8 8 L12 8"/>
+  <path class="frame" d="M20 8 L24 8 L24 12"/>
+  <path class="frame" d="M24 20 L24 24 L20 24"/>
+  <path class="frame" d="M12 24 L8 24 L8 20"/>
+  <!-- Center focus point -->
+  <circle class="dot" cx="16" cy="16" r="2"/>
+</svg>

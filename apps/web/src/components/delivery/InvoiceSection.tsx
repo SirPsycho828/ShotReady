@@ -1,3 +1,4 @@
+import { Check } from "lucide-react";
 import type { ProofingData } from "../../hooks/useProofingGallery";
 
 interface InvoiceSectionProps {
@@ -45,93 +46,89 @@ export function InvoiceSection({ data }: InvoiceSectionProps) {
     : null;
 
   return (
-    <div className="border-t border-gray-200">
-      <main className="max-w-4xl mx-auto px-4 py-8">
-        {isOverdue && (
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
-            <p className="text-amber-800 text-sm">
-              This invoice is past due. Please complete payment at your earliest
-              convenience.
-            </p>
-          </div>
-        )}
+    <div className="border-t border-border mt-8 pt-8 animate-slide-in">
+      {isOverdue && (
+        <div className="bg-warning/10 border border-warning/30 rounded-md p-4 mb-6">
+          <p className="text-warning text-sm font-500">
+            This invoice is past due. Please complete payment at your earliest
+            convenience.
+          </p>
+        </div>
+      )}
 
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">
-            Invoice
-          </h2>
+      <div className="bg-card border border-border rounded-lg p-6 shadow-glow-sm">
+        <h2 className="text-xs font-body font-500 tracking-[0.1em] uppercase text-muted-foreground mb-5">
+          Invoice
+        </h2>
 
-          <div className="text-sm text-gray-600 space-y-1 mb-6">
-            <p>
-              <span className="text-gray-400">From:</span>{" "}
+        <div className="text-sm space-y-1.5 mb-6">
+          <p>
+            <span className="text-muted-foreground">From:</span>{" "}
+            <span className="text-card-foreground font-500">
               {data.booking.photographerName}
-            </p>
+            </span>
+          </p>
+          <p>
+            <span className="text-muted-foreground">For:</span>{" "}
+            <span className="text-card-foreground font-500">
+              {address} — Photography
+            </span>
+          </p>
+          {sentDate && (
             <p>
-              <span className="text-gray-400">For:</span> {address} —
-              Photography
+              <span className="text-muted-foreground">Date:</span>{" "}
+              <span className="text-card-foreground">{sentDate}</span>
             </p>
-            {sentDate && (
-              <p>
-                <span className="text-gray-400">Date:</span> {sentDate}
-              </p>
-            )}
-            {dueDate && (
-              <p>
-                <span className="text-gray-400">Due:</span> {dueDate}
-              </p>
-            )}
-          </div>
+          )}
+          {dueDate && (
+            <p>
+              <span className="text-muted-foreground">Due:</span>{" "}
+              <span className="text-card-foreground">{dueDate}</span>
+            </p>
+          )}
+        </div>
 
-          <div className="border border-gray-200 rounded-lg overflow-hidden mb-6">
-            {invoice.lineItems.map((item, i) => (
-              <div
-                key={i}
-                className="flex justify-between px-4 py-3 border-b border-gray-100 last:border-b-0"
-              >
-                <span className="text-gray-700">{item.description}</span>
-                <span className="text-gray-900 font-medium">
-                  {formatDollars(item.amount)}
-                </span>
-              </div>
-            ))}
-            <div className="flex justify-between px-4 py-3 bg-gray-100 font-semibold">
-              <span className="text-gray-700">Total</span>
-              <span className="text-gray-900">
-                {formatDollars(invoice.total)}
+        <div className="border border-border rounded-md overflow-hidden mb-6">
+          {invoice.lineItems.map((item, i) => (
+            <div
+              key={i}
+              className="flex justify-between px-4 py-3 border-b border-border/50 last:border-b-0"
+            >
+              <span className="text-card-foreground text-sm">
+                {item.description}
+              </span>
+              <span className="text-card-foreground text-sm font-500 tabular-nums">
+                {formatDollars(item.amount)}
               </span>
             </div>
+          ))}
+          <div className="flex justify-between px-4 py-3 bg-secondary">
+            <span className="text-secondary-foreground font-600 text-sm">
+              Total
+            </span>
+            <span className="text-secondary-foreground font-600 text-sm tabular-nums">
+              {formatDollars(invoice.total)}
+            </span>
           </div>
-
-          {isPaid ? (
-            <div className="flex items-center justify-center gap-2 w-full py-4 rounded-lg bg-green-50 border border-green-200 text-green-700 font-semibold text-lg">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-              Paid{paidDate ? ` on ${paidDate}` : ""}
-            </div>
-          ) : invoice.paymentUrl ? (
-            <a
-              href={invoice.paymentUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full py-4 rounded-lg text-white font-semibold text-lg transition-opacity hover:opacity-90"
-              style={{ backgroundColor: accentColor }}
-            >
-              Pay {formatDollars(invoice.total)} Now
-            </a>
-          ) : null}
         </div>
-      </main>
+
+        {isPaid ? (
+          <div className="flex items-center justify-center gap-2 w-full py-3.5 rounded-md bg-success/10 border border-success/30 text-success font-body text-sm font-600 tracking-[0.05em] uppercase">
+            <Check size={18} />
+            Paid{paidDate ? ` on ${paidDate}` : ""}
+          </div>
+        ) : invoice.paymentUrl ? (
+          <a
+            href={invoice.paymentUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 w-full py-3.5 rounded-md text-white font-body text-sm font-600 tracking-[0.05em] uppercase transition-opacity hover:opacity-90 shadow-md"
+            style={{ backgroundColor: accentColor }}
+          >
+            Pay {formatDollars(invoice.total)} Now
+          </a>
+        ) : null}
+      </div>
     </div>
   );
 }

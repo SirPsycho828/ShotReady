@@ -70,7 +70,7 @@ export function ProofingGallery({
       <div className="pb-24">
         {/* Post-submit success banner */}
         {isSubmitted && (
-          <div className="mb-6 bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-green-800 text-sm">
+          <div className="mb-6 bg-success/10 border border-success/30 rounded-md px-4 py-3 text-success text-sm animate-slide-in">
             Your selections have been submitted! Your photographer will prepare
             your final photos and send them to you at{" "}
             {data.booking.agentEmail}.
@@ -79,33 +79,33 @@ export function ProofingGallery({
 
         {/* Instruction banner (before first interaction) */}
         {!isSubmitted && showBanner && (
-          <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 text-blue-800 text-sm">
+          <div className="mb-6 bg-accent/8 border border-accent/20 rounded-md px-4 py-3 text-accent-foreground text-sm animate-slide-in">
             Tap photos to select your favorites. Or approve all to keep
             everything.
           </div>
         )}
 
         {/* Bulk actions + counter */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-5">
           <div className="flex gap-2">
             {!isSubmitted && (
               <>
                 <button
                   onClick={() => handleBulkAction(selectAll)}
-                  className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="px-3 py-1.5 text-xs font-500 tracking-[0.04em] uppercase border border-border rounded-md hover:bg-secondary transition-colors"
                 >
                   Select All
                 </button>
                 <button
                   onClick={() => handleBulkAction(deselectAll)}
-                  className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="px-3 py-1.5 text-xs font-500 tracking-[0.04em] uppercase border border-border rounded-md hover:bg-secondary transition-colors"
                 >
                   Deselect All
                 </button>
               </>
             )}
           </div>
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-muted-foreground font-500">
             {selectedCount} of {totalCount} selected
           </span>
         </div>
@@ -130,12 +130,12 @@ export function ProofingGallery({
       </div>
 
       {/* Sticky approve button */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
+      <div className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-md border-t border-border p-4">
         <div className="max-w-6xl mx-auto">
           {isSubmitted ? (
             <button
               disabled
-              className="w-full py-3 rounded-lg bg-green-600 text-white font-semibold flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-md bg-success text-white font-body text-sm font-600 tracking-[0.05em] uppercase flex items-center justify-center gap-2"
             >
               <Check size={18} /> Selections Submitted
             </button>
@@ -143,10 +143,10 @@ export function ProofingGallery({
             <button
               onClick={handleApprove}
               disabled={selectedCount === 0 || submitting}
-              className="w-full py-3 rounded-lg text-white font-semibold disabled:opacity-50 transition-colors"
+              className="w-full py-3.5 rounded-md text-white font-body text-sm font-600 tracking-[0.05em] uppercase disabled:opacity-50 transition-opacity"
               style={{
                 backgroundColor:
-                  selectedCount > 0 ? accentColor : "#9ca3af",
+                  selectedCount > 0 ? accentColor : "hsl(var(--muted-foreground))",
               }}
             >
               {submitting

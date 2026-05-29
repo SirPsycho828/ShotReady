@@ -12,26 +12,36 @@ export function PropertySummaryCard({
   photoCount,
 }: PropertySummaryCardProps) {
   return (
-    <div className="bg-gray-50 rounded-xl p-4 mt-6">
-      <dl className="space-y-2 text-sm">
+    <div className="bg-card border border-border rounded-lg p-5 mt-6 shadow-glow-sm">
+      <dl className="space-y-3 text-sm">
         <div className="flex justify-between">
-          <dt className="text-gray-500">Property</dt>
-          <dd className="text-gray-900 font-medium text-right">{address}</dd>
+          <dt className="text-muted-foreground text-xs font-500 tracking-[0.04em] uppercase">
+            Property
+          </dt>
+          <dd className="text-card-foreground font-500 text-right">
+            {address}
+          </dd>
         </div>
         {scheduledDate && (
           <div className="flex justify-between">
-            <dt className="text-gray-500">Scheduled</dt>
-            <dd className="text-gray-900 font-medium">{scheduledDate}</dd>
+            <dt className="text-muted-foreground text-xs font-500 tracking-[0.04em] uppercase">
+              Scheduled
+            </dt>
+            <dd className="text-card-foreground font-500">{scheduledDate}</dd>
           </div>
         )}
         <div className="flex justify-between">
-          <dt className="text-gray-500">Package</dt>
-          <dd className="text-gray-900 font-medium">{packageName}</dd>
+          <dt className="text-muted-foreground text-xs font-500 tracking-[0.04em] uppercase">
+            Package
+          </dt>
+          <dd className="text-card-foreground font-500">{packageName}</dd>
         </div>
         {photoCount != null && (
           <div className="flex justify-between">
-            <dt className="text-gray-500">Photos</dt>
-            <dd className="text-gray-900 font-medium">{photoCount}</dd>
+            <dt className="text-muted-foreground text-xs font-500 tracking-[0.04em] uppercase">
+              Photos
+            </dt>
+            <dd className="text-card-foreground font-500">{photoCount}</dd>
           </div>
         )}
       </dl>

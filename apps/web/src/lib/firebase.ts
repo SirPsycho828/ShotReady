@@ -15,7 +15,14 @@ const firebaseConfig = {
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
-export const auth = getAuth(app);
+export const auth = (() => {
+  try {
+    return getAuth(app);
+  } catch {
+    // Auth fails without valid API key (e.g. local dev without .env)
+    return null as unknown as ReturnType<typeof getAuth>;
+  }
+})();
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 export const functions = getFunctions(app, "us-central1");
