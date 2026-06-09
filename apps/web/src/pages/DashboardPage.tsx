@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useBookings, type BookingWithId } from "../hooks/useBookings";
 import { usePhotographer } from "../hooks/usePhotographer";
 import { AuthLayout } from "../components/AuthLayout";
 import { BookingCard } from "../components/dashboard/BookingCard";
 import { FilterChipBar } from "../components/dashboard/FilterChipBar";
+import { useTour } from "../components/ux/AppTour";
 import {
   Search, X, Camera, Upload, Link2, Copy, Check, Settings,
   CalendarDays, Clock, CheckCircle2, AlertTriangle, ExternalLink,
@@ -54,6 +55,13 @@ function isThisWeek(seconds: number): boolean {
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const { requestTourCheck } = useTour();
+
+  // Trigger tour check every time the dashboard mounts — catches existing
+  // users who signed up before the tour existed (no localStorage key yet).
+  useEffect(() => {
+    requestTourCheck();
+  }, [requestTourCheck]);
 
   return (
     <AuthLayout activePage="dashboard">

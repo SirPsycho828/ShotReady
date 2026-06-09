@@ -50,11 +50,13 @@ const PENDING_KEY = "shotready-tour-pending";
 
 interface TourContextValue {
   startTour: () => void;
+  requestTourCheck: () => void;
   isActive: boolean;
 }
 
 const TourContext = createContext<TourContextValue>({
   startTour: () => {},
+  requestTourCheck: () => {},
   isActive: false,
 });
 
@@ -100,8 +102,9 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
     };
   }, [measureTarget]);
 
-  // Auto-start check
-  useEffect(() => {
+  // Check if tour should auto-start (called on mount and when pages request it)
+  const requestTourCheck = useCallback(() => {
+    if (active) return;
     const completed = localStorage.getItem(STORAGE_KEY) === "true";
     const pending = localStorage.getItem(PENDING_KEY) === "true";
     if (!completed || pending) {
@@ -116,7 +119,12 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
       }, 700);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [active]);
+
+  // Run on initial mount
+  useEffect(() => {
+    requestTourCheck();
+  }, [requestTourCheck]);
 
   function startTour() {
     localStorage.removeItem(STORAGE_KEY);
@@ -156,7 +164,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <TourContext.Provider value={{ startTour, isActive: active }}>
+    <TourContext.Provider value={{ startTour, requestTourCheck, isActive: active }}>
       {children}
       {active && rect && currentStep && (
         <>
