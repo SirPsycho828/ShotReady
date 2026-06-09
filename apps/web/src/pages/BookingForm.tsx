@@ -217,7 +217,7 @@ export default function BookingForm() {
           icon={CheckCircle2}
           iconColor="hsl(var(--success))"
           heading="Your booking request has been submitted!"
-          body={`You'll receive an email at ${form.email} when ${data.photographer.businessName} responds.`}
+          body={`You'll receive an email at ${form.email} when ${data.photographer.businessName} responds — including a link to track your booking's progress.`}
           imageUrl="/images/feature-exterior.jpg"
           imageAlt="Modern home exterior with pool"
         />
@@ -234,6 +234,18 @@ export default function BookingForm() {
 
   return (
     <ShellLayout branding={branding}>
+      {/* Section progress indicator — UX-003 */}
+      <div className="flex items-center gap-1.5 mb-8 overflow-x-auto pb-1">
+        {["Your Info", "Property", "Date", "Package", "Submit"].map((label, i) => (
+          <div key={label} className="flex items-center gap-1.5 shrink-0">
+            {i > 0 && <div className="w-4 h-px bg-border" />}
+            <span className="text-[11px] text-muted-foreground font-medium tracking-wide">
+              {label}
+            </span>
+          </div>
+        ))}
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-10" noValidate>
         {/* Section 1: Your Information */}
         <section className="space-y-4">

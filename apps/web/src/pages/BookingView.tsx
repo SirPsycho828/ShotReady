@@ -9,6 +9,7 @@ import {
   WifiOff,
 } from "lucide-react";
 import { useProofingGallery } from "../hooks/useProofingGallery";
+import { GuidanceTip } from "../components/ux/GuidanceTip";
 import { ShellLayout } from "../components/shell/ShellLayout";
 import { StatusMessageCard } from "../components/shell/StatusMessageCard";
 import { PropertySummaryCard } from "../components/shell/PropertySummaryCard";
@@ -137,6 +138,11 @@ function BookingContent({
             imageAlt="Modern home with pool"
           />
           <PropertySummaryCard address={address} packageName={packageName} />
+          <div className="mt-4">
+            <GuidanceTip id="booking-pending-timing">
+              Most photographers respond within 24 hours. You can revisit this page anytime to check your booking status.
+            </GuidanceTip>
+          </div>
         </>
       );
 
@@ -147,7 +153,7 @@ function BookingContent({
             icon={CheckCircle}
             iconColor="hsl(var(--success))"
             heading="Shoot confirmed!"
-            body={`${data.booking.photographerName} has confirmed your booking.`}
+            body={`${data.booking.photographerName} has confirmed your booking${scheduledDate ? ` for ${scheduledDate}` : ""}.`}
             imageUrl="/images/hero-twilight.jpg"
             imageAlt="Luxury home at twilight"
           />
@@ -156,6 +162,11 @@ function BookingContent({
             scheduledDate={scheduledDate}
             packageName={packageName}
           />
+          <div className="mt-4">
+            <GuidanceTip id="booking-confirmed-next">
+              After the shoot, your photographer will edit the photos and send them here for your review.
+            </GuidanceTip>
+          </div>
         </>
       );
 
@@ -201,6 +212,13 @@ function BookingContent({
         <>
           <DownloadPage data={data} />
           <InvoiceSection data={data} />
+          {status !== "paid" && (
+            <div className="mt-4">
+              <GuidanceTip id="invoice-payment-timing">
+                After completing payment, this page will update to reflect your receipt. It may take a few moments to process.
+              </GuidanceTip>
+            </div>
+          )}
         </>
       );
 
