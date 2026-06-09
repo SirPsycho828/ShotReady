@@ -40,6 +40,7 @@ export function AuthLayout({ children, activePage }: AuthLayoutProps) {
               <a
                 key={item.key}
                 href={item.href}
+                data-tour={`nav-${item.key}`}
                 className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   activePage === item.key
                     ? "text-accent bg-accent/10"
