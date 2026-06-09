@@ -120,7 +120,7 @@ Gaps:
 - **Findings resolved:** 12/12
 - **Average page score:** 82% -> 98%
 - **Workflows fixed:** Set Up Photographer Account (Bumpy -> Smooth), Monitor Bookings (Bumpy -> Smooth)
-- **Components created:** GuidanceTip, NextStepCard (apps/web/src/components/ux/)
-- **Onboarding:** Not applicable -- 3-page app with flat navigation, Phase 5 checklist sufficient
-- **Pages modified:** 7
+- **Components created:** GuidanceTip, NextStepCard, AppTour (apps/web/src/components/ux/)
+- **Onboarding:** 5-stop app tour (Stats, Quick Actions, Jobs Pipeline, Upload, Settings) — auto-starts on first visit, skippable, replayable from Settings. Setup wizard not needed (3 setup entities with inline checklist).
+- **Pages modified:** 7 (+ AppTour provider wrapping App.tsx)
 - **Anti-patterns:** All 8 checked, none present

@@ -53,10 +53,15 @@
 - [x] Step 7: Update state
 - [x] Step 8: Load Phase 6
 
-## Phase 6 (Onboarding) — Complete (skipped)
-- [x] Step 1: Assess need
-- [ ] Steps 2-10: Skipped — neither setup wizard nor app tour warranted
-- Reason: Only 3 top-level pages with flat navigation. Phase 5 setup checklist + GuidanceTips + NextStepCards already provide sufficient first-time guidance. Only 3 setup entities (profile, packages, availability) — inline checklist is better than a full-screen wizard.
+## Phase 6 (Onboarding) — Complete
+- [x] Step 1: Assess need — Setup Wizard: not warranted (only 3 setup entities, inline checklist sufficient). App Tour: warranted (primary workflow spans multiple pages in non-obvious sequence).
+- [ ] Steps 2-4: Setup Wizard — skipped (not warranted)
+- [x] Step 3: Design App Tour (5 stops: Stats, Quick Actions, Jobs Pipeline, Upload nav, Settings nav)
+- [x] Step 4: Design Settings Integration (Replay App Tour button)
+- [x] Step 7: Implement App Tour — custom TourProvider with SVG spotlight overlay, no library dependency
+- [x] Step 8: Implement Settings Integration — "Replay App Tour" in Onboarding section
+- [x] Step 9: Verify build (tsc --noEmit passes)
+- [x] Step 10: Commit
 
 ## Pages Modified
 - `apps/web/src/pages/SettingsPage.tsx` — UX-001, UX-002, UX-004 (setup checklist, prereq warnings, NextStepCard)
@@ -72,6 +77,7 @@
 |-----------|------|---------|
 | GuidanceTip | `apps/web/src/components/ux/GuidanceTip.tsx` | UX-008, UX-011, UX-012 |
 | NextStepCard | `apps/web/src/components/ux/NextStepCard.tsx` | UX-004, UX-009, UX-010 |
+| AppTour (TourProvider) | `apps/web/src/components/ux/AppTour.tsx` | Phase 6 onboarding |
 
 ## Findings
 | ID | Description | Severity | Status |
