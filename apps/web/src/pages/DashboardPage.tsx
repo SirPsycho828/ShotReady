@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useBookings, type BookingWithId } from "../hooks/useBookings";
 import { usePhotographer } from "../hooks/usePhotographer";
 import { AuthLayout } from "../components/AuthLayout";
 import { BookingCard } from "../components/dashboard/BookingCard";
 import { FilterChipBar } from "../components/dashboard/FilterChipBar";
+import { useTour } from "../components/ux/AppTour";
 import {
   Search, X, Camera, Upload, Link2, Copy, Check, Settings,
   CalendarDays, Clock, CheckCircle2, AlertTriangle, ExternalLink,
@@ -54,6 +55,13 @@ function isThisWeek(seconds: number): boolean {
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const { requestTourCheck } = useTour();
+
+  // Trigger tour check every time the dashboard mounts — catches existing
+  // users who signed up before the tour existed (no localStorage key yet).
+  useEffect(() => {
+    requestTourCheck();
+  }, [requestTourCheck]);
 
   return (
     <AuthLayout activePage="dashboard">
@@ -168,7 +176,7 @@ function DashboardContent({ uid }: { uid: string }) {
           Here's what's happening with your bookings.
         </p>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
+        <div data-tour="stats-cards" className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
           <div className="bg-card border border-border rounded-lg p-4">
             <div className="flex items-center gap-2 text-muted-foreground mb-1.5">
               <Camera size={14} />
@@ -209,7 +217,7 @@ function DashboardContent({ uid }: { uid: string }) {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+      <div data-tour="quick-actions" className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
         {bookingUrl ? (
           <button
             onClick={handleCopyLink}
@@ -257,7 +265,7 @@ function DashboardContent({ uid }: { uid: string }) {
       </div>
 
       {/* Jobs Section */}
-      <div className="border-t border-border pt-6">
+      <div data-tour="jobs-pipeline" className="border-t border-border pt-6">
         <div className="flex items-center justify-between mb-4">
           {searchOpen ? (
             <div className="flex-1 flex items-center gap-2 bg-secondary rounded-lg px-3 py-2">

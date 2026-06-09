@@ -17,7 +17,7 @@ export function BookingCard({ booking }: { booking: BookingWithId }) {
   const street = getStreetAddress(booking.property.address);
 
   return (
-    <div className="bg-card rounded-lg px-4 py-3 shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-card rounded-lg px-4 py-3 shadow-sm">
       <div className="flex items-start justify-between gap-3">
         <h4 className="text-sm font-semibold text-card-foreground truncate flex-1">
           {street}

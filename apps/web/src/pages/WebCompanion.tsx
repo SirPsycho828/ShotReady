@@ -6,6 +6,8 @@ import { useEditingBookings } from "../hooks/useEditingBookings";
 import { AuthLayout } from "../components/AuthLayout";
 import { BookingSelector } from "../components/BookingSelector";
 import { UploadScreen } from "../components/UploadScreen";
+import { NextStepCard } from "../components/ux/NextStepCard";
+import { Camera } from "lucide-react";
 
 export default function WebCompanion() {
   const { user } = useAuth();
@@ -34,8 +36,17 @@ export default function WebCompanion() {
     <AuthLayout activePage="upload">
       <main className="max-w-3xl mx-auto px-6 py-8">
         {successMessage && (
-          <div className="mb-6 bg-success/10 border border-success/30 rounded-md px-4 py-3 text-success text-sm animate-slide-in">
-            {successMessage}
+          <div className="space-y-4 mb-6 animate-slide-in">
+            <div className="bg-success/10 border border-success/30 rounded-md px-4 py-3 text-success text-sm">
+              {successMessage}
+            </div>
+            <NextStepCard
+              title="Back to Dashboard"
+              description="View your bookings and track this job's progress."
+              href="/dashboard"
+              actionLabel="Dashboard"
+              icon={<Camera size={20} className="text-accent" />}
+            />
           </div>
         )}
         {user && (

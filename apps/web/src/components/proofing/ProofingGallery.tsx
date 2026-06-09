@@ -1,8 +1,9 @@
 import { useState, useRef } from "react";
-import { Check } from "lucide-react";
+import { Check, AlertTriangle, X } from "lucide-react";
 import type { ProofingData } from "../../hooks/useProofingGallery";
 import { PhotoCell } from "./PhotoCell";
 import { Lightbox } from "./Lightbox";
+import { GuidanceTip } from "../ux/GuidanceTip";
 
 interface ProofingGalleryProps {
   data: ProofingData;
@@ -30,6 +31,7 @@ export function ProofingGallery({
   submitSelections,
 }: ProofingGalleryProps) {
   const [showBanner, setShowBanner] = useState(true);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [lightboxPhotoId, setLightboxPhotoId] = useState<string | null>(null);
   const hasInteracted = useRef(false);
 
@@ -54,10 +56,7 @@ export function ProofingGallery({
 
   function handleApprove() {
     if (selectedCount === 0) return;
-    const confirmed = window.confirm(
-      `You've selected ${selectedCount} of ${totalCount} photos. Your photographer will prepare these for delivery. This cannot be undone.`,
-    );
-    if (confirmed) submitSelections();
+    setShowConfirm(true);
   }
 
   const photosWithSelection = data.photos.map((p) => ({
@@ -158,6 +157,47 @@ export function ProofingGallery({
           )}
         </div>
       </div>
+
+      {/* Confirmation modal — UX-006 */}
+      {showConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowConfirm(false)} />
+          <div className="relative bg-card border border-border rounded-lg p-6 max-w-sm w-full shadow-xl animate-develop">
+            <button
+              onClick={() => setShowConfirm(false)}
+              className="absolute top-3 right-3 p-1 text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Close"
+            >
+              <X size={16} />
+            </button>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-warning/10 flex items-center justify-center shrink-0">
+                <AlertTriangle size={20} className="text-warning" />
+              </div>
+              <h3 className="font-heading text-lg font-500 text-foreground">Confirm Selection</h3>
+            </div>
+            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+              You've selected <span className="text-foreground font-500">{selectedCount} of {totalCount}</span> photos.
+              Your photographer will prepare these for delivery. This cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowConfirm(false)}
+                className="flex-1 py-2.5 rounded-md border border-border text-sm font-500 text-foreground hover:bg-secondary transition-colors"
+              >
+                Go Back
+              </button>
+              <button
+                onClick={() => { setShowConfirm(false); submitSelections(); }}
+                className="flex-1 py-2.5 rounded-md text-white text-sm font-600 tracking-[0.03em] uppercase transition-opacity hover:opacity-90"
+                style={{ backgroundColor: accentColor }}
+              >
+                Approve Photos
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Lightbox */}
       {lightboxPhotoId && (

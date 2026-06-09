@@ -179,17 +179,19 @@ export function UploadScreen({
 
   return (
     <div className="animate-slide-in">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-2">
         <button
           onClick={onBack}
           className="text-accent text-sm hover:underline flex items-center gap-1.5 font-500"
         >
-          <ArrowLeft size={16} /> Back
+          <ArrowLeft size={16} /> All Bookings
         </button>
-        <div className="text-right">
-          <p className="text-foreground font-500">{address}</p>
-          <p className="text-muted-foreground text-sm">{agentName}</p>
-        </div>
+      </div>
+      <div className="mb-8">
+        <h2 className="font-heading text-2xl font-semibold text-foreground">Upload Photos</h2>
+        <p className="text-sm text-muted-foreground mt-0.5">
+          {address} &middot; {agentName}
+        </p>
       </div>
 
       <DropZone onFiles={addFiles} disabled={isUploading} />

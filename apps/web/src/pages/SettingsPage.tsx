@@ -5,7 +5,10 @@ import { usePackages, type PackageWithId } from "../hooks/usePackages";
 import { AuthLayout } from "../components/AuthLayout";
 import {
   Save, Plus, Trash2, Edit2, X, Check, Copy, ExternalLink,
+  CheckCircle2, Circle, AlertTriangle, RotateCcw,
 } from "lucide-react";
+import { NextStepCard } from "../components/ux/NextStepCard";
+import { useTour } from "../components/ux/AppTour";
 import type { Photographer, AvailabilityWindow } from "@shotready/shared";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -51,12 +54,64 @@ function SettingsContent({ uid }: { uid: string }) {
     );
   }
 
+  const hasProfile = !!(photographer?.businessName && photographer?.bookingSlug);
+  const hasPackages = packages.some((p) => p.isActive);
+  const hasAvailability = (photographer?.availability?.windows?.length ?? 0) > 0;
+  const allComplete = hasProfile && hasPackages && hasAvailability;
+
+  const steps = [
+    { label: "Business Profile", done: hasProfile },
+    { label: "Service Package", done: hasPackages },
+    { label: "Availability", done: hasAvailability },
+  ];
+  const completedCount = steps.filter((s) => s.done).length;
+
   return (
     <div className="space-y-10">
+      {/* Setup Checklist — UX-001, UX-002, UX-004 */}
+      {!allComplete ? (
+        <div className="bg-card border border-border rounded-lg p-5 animate-slide-in">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider">
+              Setup Checklist
+            </h2>
+            <span className="text-xs text-muted-foreground">
+              {completedCount} of {steps.length} complete
+            </span>
+          </div>
+          <div className="space-y-2.5">
+            {steps.map((step) => (
+              <div key={step.label} className="flex items-center gap-2.5">
+                {step.done ? (
+                  <CheckCircle2 size={16} className="text-success shrink-0" />
+                ) : (
+                  <Circle size={16} className="text-muted-foreground shrink-0" />
+                )}
+                <span className={`text-sm ${step.done ? "text-muted-foreground line-through" : "text-foreground font-medium"}`}>
+                  {step.label}
+                </span>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground mt-3 pt-3 border-t border-border">
+            Complete all three to activate your booking link for agents.
+          </p>
+        </div>
+      ) : (
+        <NextStepCard
+          title="You're all set!"
+          description="Your booking link is live. Copy it from your Dashboard and share it with agents to start receiving bookings."
+          href="/dashboard"
+          actionLabel="Go to Dashboard"
+          icon={<CheckCircle2 size={20} className="text-success" />}
+        />
+      )}
+
       <ProfileSection photographer={photographer} uid={uid} onSave={updatePhotographer} />
-      <BookingLinkSection photographer={photographer} />
+      <BookingLinkSection photographer={photographer} hasPackages={hasPackages} hasAvailability={hasAvailability} />
       <PackagesSection packages={packages} uid={uid} onAdd={addPackage} onUpdate={updatePackage} onRemove={removePackage} />
       <AvailabilitySection photographer={photographer} uid={uid} onSave={updatePhotographer} />
+      <ReplayTourSection />
     </div>
   );
 }
@@ -191,7 +246,7 @@ function ProfileSection({
 
 /* ── Booking Link Section ── */
 
-function BookingLinkSection({ photographer }: { photographer: Photographer | null }) {
+function BookingLinkSection({ photographer, hasPackages, hasAvailability }: { photographer: Photographer | null; hasPackages: boolean; hasAvailability: boolean }) {
   const [copied, setCopied] = useState(false);
   const slug = photographer?.bookingSlug;
   const bookingUrl = slug ? `https://shotready-001.web.app/book/${slug}` : null;
@@ -239,6 +294,22 @@ function BookingLinkSection({ photographer }: { photographer: Photographer | nul
         <p className="text-xs text-muted-foreground mt-3">
           Share this link with real estate agents. They'll be able to pick a package, choose a date, and submit a booking request.
         </p>
+
+        {/* Prerequisite warnings — UX-002 */}
+        {bookingUrl && (!hasPackages || !hasAvailability) && (
+          <div className="flex items-start gap-2.5 mt-3 p-3 rounded-md bg-warning/8 border border-warning/20">
+            <AlertTriangle size={14} className="text-warning shrink-0 mt-0.5" />
+            <p className="text-xs text-muted-foreground">
+              Your booking link is set, but agents also need{" "}
+              {!hasPackages && !hasAvailability
+                ? "at least one active package and your availability configured"
+                : !hasPackages
+                  ? "at least one active package"
+                  : "your availability configured"}{" "}
+              before they can book.
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );
@@ -448,6 +519,37 @@ function PackageForm({
         </button>
       </div>
     </form>
+  );
+}
+
+/* ── Replay Tour Section ── */
+
+function ReplayTourSection() {
+  const { startTour } = useTour();
+
+  function handleReplay() {
+    startTour();
+    window.location.href = "/dashboard";
+  }
+
+  return (
+    <section>
+      <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-4">
+        Onboarding
+      </h2>
+      <div className="bg-card border border-border rounded-lg p-5">
+        <p className="text-xs text-muted-foreground mb-3">
+          Re-run the guided tour to see what each section of the app does.
+        </p>
+        <button
+          onClick={handleReplay}
+          className="flex items-center gap-2 px-4 py-2 bg-secondary text-foreground text-sm font-medium rounded-md hover:bg-secondary/80 transition-colors"
+        >
+          <RotateCcw size={14} />
+          Replay App Tour
+        </button>
+      </div>
+    </section>
   );
 }
 
