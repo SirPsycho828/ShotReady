@@ -168,7 +168,7 @@ function DashboardContent({ uid }: { uid: string }) {
           Here's what's happening with your bookings.
         </p>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
+        <div data-tour="stats-cards" className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
           <div className="bg-card border border-border rounded-lg p-4">
             <div className="flex items-center gap-2 text-muted-foreground mb-1.5">
               <Camera size={14} />
@@ -209,7 +209,7 @@ function DashboardContent({ uid }: { uid: string }) {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+      <div data-tour="quick-actions" className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
         {bookingUrl ? (
           <button
             onClick={handleCopyLink}
@@ -257,7 +257,7 @@ function DashboardContent({ uid }: { uid: string }) {
       </div>
 
       {/* Jobs Section */}
-      <div className="border-t border-border pt-6">
+      <div data-tour="jobs-pipeline" className="border-t border-border pt-6">
         <div className="flex items-center justify-between mb-4">
           {searchOpen ? (
             <div className="flex-1 flex items-center gap-2 bg-secondary rounded-lg px-3 py-2">

@@ -6,6 +6,7 @@ import BookingView from "./pages/BookingView";
 import WebCompanion from "./pages/WebCompanion";
 import SettingsPage from "./pages/SettingsPage";
 import { useAuth } from "./hooks/useAuth";
+import { TourProvider } from "./components/ux/AppTour";
 
 function Home() {
   const { user, loading } = useAuth();
@@ -16,13 +17,15 @@ function Home() {
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/dashboard" element={<DashboardPage />} />
-      <Route path="/book/:slug" element={<BookingForm />} />
-      <Route path="/b/:token" element={<BookingView />} />
-      <Route path="/upload" element={<WebCompanion />} />
-      <Route path="/settings" element={<SettingsPage />} />
-    </Routes>
+    <TourProvider>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/book/:slug" element={<BookingForm />} />
+        <Route path="/b/:token" element={<BookingView />} />
+        <Route path="/upload" element={<WebCompanion />} />
+        <Route path="/settings" element={<SettingsPage />} />
+      </Routes>
+    </TourProvider>
   );
 }

@@ -5,9 +5,10 @@ import { usePackages, type PackageWithId } from "../hooks/usePackages";
 import { AuthLayout } from "../components/AuthLayout";
 import {
   Save, Plus, Trash2, Edit2, X, Check, Copy, ExternalLink,
-  CheckCircle2, Circle, AlertTriangle,
+  CheckCircle2, Circle, AlertTriangle, RotateCcw,
 } from "lucide-react";
 import { NextStepCard } from "../components/ux/NextStepCard";
+import { useTour } from "../components/ux/AppTour";
 import type { Photographer, AvailabilityWindow } from "@shotready/shared";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -110,6 +111,7 @@ function SettingsContent({ uid }: { uid: string }) {
       <BookingLinkSection photographer={photographer} hasPackages={hasPackages} hasAvailability={hasAvailability} />
       <PackagesSection packages={packages} uid={uid} onAdd={addPackage} onUpdate={updatePackage} onRemove={removePackage} />
       <AvailabilitySection photographer={photographer} uid={uid} onSave={updatePhotographer} />
+      <ReplayTourSection />
     </div>
   );
 }
@@ -517,6 +519,37 @@ function PackageForm({
         </button>
       </div>
     </form>
+  );
+}
+
+/* ── Replay Tour Section ── */
+
+function ReplayTourSection() {
+  const { startTour } = useTour();
+
+  function handleReplay() {
+    startTour();
+    window.location.href = "/dashboard";
+  }
+
+  return (
+    <section>
+      <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-4">
+        Onboarding
+      </h2>
+      <div className="bg-card border border-border rounded-lg p-5">
+        <p className="text-xs text-muted-foreground mb-3">
+          Re-run the guided tour to see what each section of the app does.
+        </p>
+        <button
+          onClick={handleReplay}
+          className="flex items-center gap-2 px-4 py-2 bg-secondary text-foreground text-sm font-medium rounded-md hover:bg-secondary/80 transition-colors"
+        >
+          <RotateCcw size={14} />
+          Replay App Tour
+        </button>
+      </div>
+    </section>
   );
 }
 
